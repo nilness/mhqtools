@@ -43,7 +43,7 @@ on error
 	
 end try
 
---display dialog store
+--display dialog osVersion
 
 --display dialog SWUpdateServer
 
@@ -150,15 +150,15 @@ end listSWUpdateServer
 
 on resetSWUpdateServer()
 	try
-		--if running in 10.7 or 10.8 we need to supply password
+		--if running in 10.7 or later we need to supply password
 		
-		if (osVersion ≥ "7") then
-			do shell script "/usr/bin/defaults delete /Library/Preferences/com.apple.SoftwareUpdate CatalogURL" with administrator privileges
+		if (osVersion < "7" and osVersion > "3") then
+			do shell script "/usr/bin/defaults delete /Library/Preferences/com.apple.SoftwareUpdate CatalogURL"
 		else
-			do shell script "defaults delete /Library/Preferences/com.apple.SoftwareUpdate CatalogURL"
+			do shell script "defaults delete /Library/Preferences/com.apple.SoftwareUpdate CatalogURL" with administrator privileges
 		end if
 		
-		do shell script "defaults delete /Library/Preferences/com.apple.SoftwareUpdate CatalogURL"
+		--do shell script "defaults delete /Library/Preferences/com.apple.SoftwareUpdate CatalogURL"
 	end try
 end resetSWUpdateServer
 
@@ -204,6 +204,7 @@ URL1='http://" & SWUpdateServer & "'
 	7) URL=\"${URL1}/index-lion-snowleopard-leopard.merged-1.sucatalog\" ;;
 	8) URL=\"${URL1}/index-mountainlion-lion-snowleopard-leopard.merged-1.sucatalog\" ;;
 	9) URL=\"${URL1}/index-10.9-mountainlion-lion-snowleopard-leopard.merged-1.sucatalog\" ;;
+	10) URL=\"${URL1}/index-10.10-10.9-mountainlion-lion-snowleopard-leopard.merged-1.sucatalog\" ;;
       *) echo \"Unsupported client OS\"; exit 1 ;;
     esac
 
@@ -212,10 +213,10 @@ URL1='http://" & SWUpdateServer & "'
 	"
 	--if running in 10.7 or 10.8 we need to supply password
 	
-	if (osVersion ≥ "7") then
-		do shell script theSetScript with administrator privileges
-	else
+	if (osVersion < "7" and osVersion > "3") then
 		do shell script theSetScript
+	else
+		do shell script theSetScript with administrator privileges
 	end if
 	
 end setSWUpdateServer
@@ -233,7 +234,11 @@ on resetUserCPU()
 	try
 		display dialog "This will install the MHQ reset script and restart the computer into single user mode, then run the reset script automatically. Do you wish to continue?" buttons {"Quit", "Continue"} default button "Continue" cancel button "Quit"
 		installResetScript()
-		do shell script "echo \"/mhqreset.sh\" >> /private/var/root/.profile" with administrator privileges
+		if osVersion is "10" then
+			do shell script "echo \"sh /mhqreset.sh\" >> /private/var/root/.bashrc" with administrator privileges
+		else
+			do shell script "echo \"sh /mhqreset.sh\" >> /private/var/root/.profile" with administrator privileges
+		end if
 		do shell script "nvram boot-args=\"-s\"" with administrator privileges
 		tell application "Finder" to restart
 		return -128
@@ -249,7 +254,11 @@ on resetThisUserCPU()
 		display dialog "This will install the MHQ reset script and restart the computer into single user mode, then run the reset script automatically. The user \"" & current_user & "\" will be deleted with all it's files. Do you wish to continue?" buttons {"Quit", "Continue"} default button "Continue" cancel button "Quit"
 		display dialog "Are you absolutely certain?. The user \"" & current_user & "\" will be deleted with all it's files. Do you wish to continue?" buttons {"Quit", "Continue"} default button "Continue" cancel button "Quit"
 		installResetScript()
-		do shell script "echo '/mhqreset.sh' '\"" & current_user & "\"' >> /private/var/root/.profile" with administrator privileges
+		if osVersion is "10" then
+			do shell script "echo \"sh /mhqreset.sh\" >> /private/var/root/.bashrc" with administrator privileges
+		else
+			do shell script "echo \"sh /mhqreset.sh\" >> /private/var/root/.profile" with administrator privileges
+		end if
 		do shell script "nvram boot-args=\"-s\"" with administrator privileges
 		tell application "Finder" to restart
 		return -128
@@ -270,11 +279,7 @@ on InstallSWUpdatePlist()
 	
 	set TheFile to ((path to me as string) & "Contents:Resources:Set SWUpdate Server") as alias
 	
-	if (osVersion ≥ "7") then
-		tell application "Finder"
-			duplicate TheFile to (path to startup items from local domain as alias) with replacing
-		end tell
-	else
+	if (osVersion < "7" and osVersion > "3") then
 		set theScript to "
 		
 		#!/bin/bash
@@ -285,6 +290,11 @@ on InstallSWUpdatePlist()
 		cp -R '" & (the POSIX path of TheFile) & "' '/Library/StartupItems/Set SWUpdate Server/.' 
 		"
 		do shell script theScript with administrator privileges
+		
+	else
+		tell application "Finder"
+			duplicate TheFile to (path to startup items from local domain as alias) with replacing
+		end tell
 	end if
 	
 	do shell script "chmod -R 755 '/Library/StartupItems/Set SWUpdate Server'; sudo chown -R root:wheel '/Library/StartupItems/Set SWUpdate Server'" with administrator privileges
@@ -371,7 +381,7 @@ case `/usr/bin/sw_vers -productVersion | /usr/bin/awk -F . '{print $2}'` in
     4) lookupd -flushcache ;;   
    [56]) dscacheutil -flushcache ;;      
     [78]) sudo killall -HUP mDNSResponder ;;
-    9) dscacheutil -flushcache;sudo killall -HUP mDNSResponder ;;
+    9 | 10) dscacheutil -flushcache;sudo killall -HUP mDNSResponder ;;
       *) echo \"Unsupported client OS\"; exit 1 ;;
 esac
 
@@ -379,10 +389,10 @@ esac
 	"
 	--if running in 10.7 or 10.8 we need to supply password
 	
-	if (osVersion ≥ "7") then
-		do shell script theSetScript with administrator privileges
-	else
+	if (osVersion < "7" and osVersion > "3") then
 		do shell script theSetScript
+	else
+		do shell script theSetScript with administrator privileges
 	end if
 end FlushDNSCache
 
@@ -467,4 +477,4 @@ on UpdateWorkflowsFromServer()
 		return "Error syncronizing folders."
 	end try
 	
-end UpdateWorkflowsFromServer
+end UpdateWorkflowsFromServer	
