@@ -11,8 +11,13 @@ fi
 # try to verify single-user mode!
 
 # current_user=`/usr/bin/whoami`
-if [ `/usr/bin/whoami` != "root" ]; then
-echo "Script must be run as root"
+#if [ `/usr/bin/whoami` != "root" ]; then
+#echo "Script must be run as root"
+#exit
+#fi
+
+if [ `! sysctl -n kern.singleuser` != "1" ]; then
+echo Script must be run in single user mode
 exit
 fi
 
@@ -38,7 +43,7 @@ case `/usr/bin/sw_vers -productVersion | /usr/bin/awk -F . '{print $2}'` in
 
        dscl . -delete /users/"$username"
        ;;
-  [789]) rm /var/db/dslocal/nodes/default/users/"$username".plist
+  [789] | 10) rm /var/db/dslocal/nodes/default/users/"$username".plist
        ;; 
     *) echo "unrecognized system"
        exit
@@ -68,6 +73,7 @@ defaults delete /Library/Preferences/com.apple.SoftwareUpdate CatalogURL
 # remove this script & root user .profile
 rm $0
 rm /private/var/root/.profile
+rm /private/var/root/.bashrc
 
 # clear any nvram arguments
 nvram boot-args=""
