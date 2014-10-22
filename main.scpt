@@ -181,7 +181,11 @@ disk_size=`system_profiler SPSerialATADataType |sed '/^ *Capacity: */!d;s###' | 
 
 diskutil rename \"${boot_disk}\" \"${disk_size}\"
 
-defaults write com.apple.Finder ShowHardDrivesOnDesktop -bool true #this will make sure the Finder is set to show drives on desktop
+# Show icons for hard drives, servers, and removable media on the desktop
+#defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true
+defaults write com.apple.finder ShowHardDrivesOnDesktop -bool true
+#defaults write com.apple.finder ShowMountedServersOnDesktop -bool true
+#defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool true
 
 killall Finder
 	
@@ -477,4 +481,4 @@ on UpdateWorkflowsFromServer()
 		return "Error syncronizing folders."
 	end try
 	
-end UpdateWorkflowsFromServer	
+end UpdateWorkflowsFromServer
