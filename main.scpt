@@ -43,12 +43,12 @@ on error
 	
 end try
 
---display dialog osVersion
+--display dialog osVersion buttons {"OK"}
 
---display dialog SWUpdateServer
+--display dialog SWUpdateServer buttons {"OK"}
 
 
-set theButtonNames to {"Set Used Prefs (all *'ed items)", "Set SWUpdateServer*", "List SWUpdateServer", "Remove SWUpdateServer", "Set MacHQ homepage*", "Disable Sleep*", "Rename HD by Size*", "Install MHQ Reset Script", "Remove MHQ User & Reset CPU", "Remove Current User & Reset CPU", "Install Tech User Reset Script", "Test for Flashback Trojan", "Rebuild Launch Services DB", "Flush DNS Cache", "Reinstall default Fake preferences", "Update Fake Workflows from Server", "Install SWUpdate StartupItem", "Save System Profiler Report to server"}
+set theButtonNames to {"Set Used Prefs (all *'ed items)", "Set SWUpdateServer*", "List SWUpdateServer", "Remove SWUpdateServer", "Set MacHQ homepage*", "Disable Sleep*", "Rename HD by Size*", "Install MHQ Reset Script", "Remove Current User & Reset CPU", "Install Tech User Reset Script", "Test for Flashback Trojan", "Test for ShellShock vulnerability", "Rebuild Launch Services DB", "Flush DNS Cache", "Reinstall default Fake preferences", "Update Fake Workflows from Server", "Install SWUpdate StartupItem", "Save System Profiler Report to server"}
 
 repeat
 	set theChoice to choose from list theButtonNames
@@ -96,6 +96,8 @@ repeat
 		SystemProfilerReport()
 	else if theChoice as string is "Update Fake Workflows from Server" then
 		UpdateWorkflowsFromServer()
+	else if theChoice as string is "Test for ShellShock vulnerability" then
+		testForShellShockVulnerability()
 	else
 		tell me to quit
 	end if
@@ -142,9 +144,9 @@ end setHomePage
 on listSWUpdateServer()
 	try
 		set server_name to do shell script "defaults read /Library/Preferences/com.apple.SoftwareUpdate CatalogURL"
-		display dialog "SW update server is: " & server_name
+		display dialog "SW update server is: " & server_name buttons {"OK"}
 	on error
-		display dialog "Using default Apple SW Update Server"
+		display dialog "Using default Apple SW Update Server" buttons {"OK"}
 	end try
 end listSWUpdateServer
 
@@ -152,10 +154,10 @@ on resetSWUpdateServer()
 	try
 		--if running in 10.7 or later we need to supply password
 		
-		if (osVersion < "7" and osVersion > "3") then
-			do shell script "/usr/bin/defaults delete /Library/Preferences/com.apple.SoftwareUpdate CatalogURL"
-		else
+		if (osVersion as number > 7) then
 			do shell script "defaults delete /Library/Preferences/com.apple.SoftwareUpdate CatalogURL" with administrator privileges
+		else
+			do shell script "/usr/bin/defaults delete /Library/Preferences/com.apple.SoftwareUpdate CatalogURL"
 		end if
 		
 		--do shell script "defaults delete /Library/Preferences/com.apple.SoftwareUpdate CatalogURL"
@@ -216,13 +218,13 @@ URL1='http://" & SWUpdateServer & "'
 	
 	"
 	--if running in 10.7 or 10.8 we need to supply password
-	
-	if (osVersion < "7" and osVersion > "3") then
-		do shell script theSetScript
-	else
-		do shell script theSetScript with administrator privileges
-	end if
-	
+	try
+		if (osVersion as number > 7) then
+			do shell script theSetScript with administrator privileges
+		else
+			do shell script theSetScript
+		end if
+	end try
 end setSWUpdateServer
 
 on installResetScript()
@@ -283,7 +285,13 @@ on InstallSWUpdatePlist()
 	
 	set TheFile to ((path to me as string) & "Contents:Resources:Set SWUpdate Server") as alias
 	
-	if (osVersion < "7" and osVersion > "3") then
+	if (osVersion as number > 7) then
+		
+		tell application "Finder"
+			duplicate TheFile to (path to startup items from local domain as alias) with replacing
+		end tell
+	else
+		
 		set theScript to "
 		
 		#!/bin/bash
@@ -295,10 +303,6 @@ on InstallSWUpdatePlist()
 		"
 		do shell script theScript with administrator privileges
 		
-	else
-		tell application "Finder"
-			duplicate TheFile to (path to startup items from local domain as alias) with replacing
-		end tell
 	end if
 	
 	do shell script "chmod -R 755 '/Library/StartupItems/Set SWUpdate Server'; sudo chown -R root:wheel '/Library/StartupItems/Set SWUpdate Server'" with administrator privileges
@@ -366,7 +370,7 @@ on reinstallFakeWorkflows()
 	set oldFolder to (path to application support from user domain as text) & "Fake:Workflows:"
 	set fakeFolder to (path to application support from user domain as text) & "Fake:"
 	set newFolder to ((path to me as string) & "Contents:Resources:Workflows") as alias
-	--	display dialog oldFolder
+	--	display dialog oldFolder buttons {"OK"}
 	tell application "Finder"
 		try
 			delete oldFolder
@@ -385,7 +389,8 @@ case `/usr/bin/sw_vers -productVersion | /usr/bin/awk -F . '{print $2}'` in
     4) lookupd -flushcache ;;   
    [56]) dscacheutil -flushcache ;;      
     [78]) sudo killall -HUP mDNSResponder ;;
-    9 | 10) dscacheutil -flushcache;sudo killall -HUP mDNSResponder ;;
+    9) dscacheutil -flushcache; sudo killall -HUP mDNSResponder ;;
+  10) dscacheutil -flushcache; sudo discoveryutil mdnsflushcache ;;
       *) echo \"Unsupported client OS\"; exit 1 ;;
 esac
 
@@ -393,10 +398,10 @@ esac
 	"
 	--if running in 10.7 or 10.8 we need to supply password
 	
-	if (osVersion < "7" and osVersion > "3") then
-		do shell script theSetScript
-	else
+	if (osVersion as number > 7) then
 		do shell script theSetScript with administrator privileges
+	else
+		do shell script theSetScript
 	end if
 end FlushDNSCache
 
@@ -458,7 +463,7 @@ on UpdateWorkflowsFromServer()
 		set dest_volume to "afp://servercdr.local/Retail"
 	end if
 	
-	--	display dialog oldFolder
+	--	display dialog oldFolder buttons {"OK"}
 	
 	tell application "Finder"
 		try
@@ -482,3 +487,97 @@ on UpdateWorkflowsFromServer()
 	end try
 	
 end UpdateWorkflowsFromServer
+
+on testForShellShockVulnerability()
+	
+	set test_1 to "
+#!/bin/bash
+
+EXPLOIT_1=`env x='() { :;}; echo vulnerable' bash -c \"echo this is a test\"`
+if [ \"${EXPLOIT_1}\" = \"vulnerable\" ]; then
+    echo \"Test 1 (CVE-2014-6271):	**** Machine appears to be vulnerable ****\"
+else
+    echo \"Test 1 (CVE-2014-6271):	Machine doesn't appear to be vulnerable\"
+fi
+"
+	set test_2 to "
+#!/bin/bash
+
+EXPLOIT_2=`env X='() { (shellshocker.net)=>\\' bash -c \"echo date\"; cat echo; rm ./echo `
+if [ \"${EXPLOIT_2}\" != \"date\" ]; then
+    echo \"Test 2 (CVE-2014-7169):	**** Machine appears to be vulnerable ****\"
+else
+    echo \"Test 2 (CVE-2014-7169):	Machine doesn't appear to be vulnerable\"
+fi
+"
+	set test_3 to "
+#!/bin/bash
+
+EXPLOIT_3=`env X=' () { }; echo hello' bash -c 'date'`
+if [ \"${EXPLOIT_3}\" = \"hello\" ]; then
+    echo \"Test 3 (CVE-??):	**** Machine appears to be vulnerable ****\"
+else
+    echo \"Test 3 (CVE-??):	Machine doesn't appear to be vulnerable\"
+fi
+
+"
+	
+	set test_4 to "
+#!/bin/bash
+
+EXPLOIT_4=`bash -c 'true <<EOF <<EOF <<EOF <<EOF <<EOF <<EOF <<EOF <<EOF <<EOF <<EOF <<EOF <<EOF <<EOF <<EOF' || echo \"CVE-2014-7186 vulnerable, redir_stack\"`
+if [ \"${EXPLOIT_4}\" = \"CVE-2014-7186 vulnerable, redir_stack\" ]; then
+    echo \"Test 4 (CVE-2014-7186):	**** Machine appears to be vulnerable ****\"
+else
+    echo \"Test 4 (CVE-2014-7186):	Machine doesn't appear to be vulnerable\"
+fi
+
+"
+	
+	set test_5 to "
+#!/bin/bash
+
+EXPLOIT_5=`(for x in {1..200} ; do echo \"for x$x in ; do :\"; done; for x in {1..200} ; do echo done ; done) | bash || echo \"CVE-2014-7187 vulnerable, word_lineno\"`
+if [ \"${EXPLOIT_5}\" = \"CVE-2014-7187 vulnerable, word_lineno\" ]; then
+    echo \"Test 5 (CVE-2014-7187):	**** Machine appears to be vulnerable ****\"
+else
+    echo \"Test 5 (CVE-2014-7187):	Machine doesn't appear to be vulnerable\"
+fi
+
+"
+	set test_6 to "
+#!/bin/bash
+
+EXPLOIT_6=`shellshocker='() { echo You are vulnerable; }' bash -c shellshocker`
+if [ \"${EXPLOIT_6}\" = \"You are vulnerable\" ]; then
+    echo \"Test 6 (CVE-2014-6278):	**** Machine appears to be vulnerable ****\"
+else
+    echo \"Test 6 (CVE-2014-6278):	Machine doesn't appear to be vulnerable\"
+fi
+
+"
+	set test_7 to "
+#!/bin/bash
+
+EXPLOIT_7=`bash -c \"f() { x() { _;}; x() { _;} <<a; }\" 2>/dev/null || echo vulnerable`
+if [ \"${EXPLOIT_7}\" = \"vulnerable\" ]; then
+    echo \"Test 7 (CVE-2014-6277):	**** Machine appears to be vulnerable ****\"
+else
+    echo \"Test 7 (CVE-2014-6277):	Machine doesn't appear to be vulnerable\"
+fi
+
+"
+	
+	
+	set result_1 to do shell script test_1
+	set result_2 to do shell script test_2
+	set result_3 to do shell script test_3
+	set result_4 to do shell script test_4
+	set result_5 to do shell script test_5
+	set result_6 to do shell script test_6
+	set result_7 to do shell script test_7
+	
+	try
+		display dialog result_1 & return & result_2 & return & result_3 & return & result_4 & return & result_6 & return & result_6 & return & result_7 & return buttons {"OK"}
+	end try
+end testForShellShockVulnerability
