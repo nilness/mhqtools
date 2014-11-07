@@ -240,12 +240,17 @@ on resetUserCPU()
 	try
 		display dialog "This will install the MHQ reset script and restart the computer into single user mode, then run the reset script automatically. Do you wish to continue?" buttons {"Quit", "Continue"} default button "Continue" cancel button "Quit"
 		installResetScript()
+		
 		if osVersion is "10" then
-			do shell script "echo \"sh /mhqreset.sh\" >> /private/var/root/.bashrc" with administrator privileges
+			set target_file to ".bashrc"
 		else
-			do shell script "echo \"sh /mhqreset.sh\" >> /private/var/root/.profile" with administrator privileges
+			set target_file to ".profile"
 		end if
+		
+		do shell script "echo \"sh /mhqreset.sh\" >> /private/var/root/" & target_file with administrator privileges
+		
 		do shell script "nvram boot-args=\"-s\"" with administrator privileges
+		
 		tell application "Finder" to restart
 		return -128
 	end try
@@ -260,12 +265,17 @@ on resetThisUserCPU()
 		display dialog "This will install the MHQ reset script and restart the computer into single user mode, then run the reset script automatically. The user \"" & current_user & "\" will be deleted with all it's files. Do you wish to continue?" buttons {"Quit", "Continue"} default button "Continue" cancel button "Quit"
 		display dialog "Are you absolutely certain?. The user \"" & current_user & "\" will be deleted with all it's files. Do you wish to continue?" buttons {"Quit", "Continue"} default button "Continue" cancel button "Quit"
 		installResetScript()
+		
 		if osVersion is "10" then
-			do shell script "echo \"sh /mhqreset.sh\" >> /private/var/root/.bashrc" with administrator privileges
+			set target_file to ".bashrc"
 		else
-			do shell script "echo \"sh /mhqreset.sh\" >> /private/var/root/.profile" with administrator privileges
+			set target_file to ".profile"
 		end if
+		
+		do shell script "echo \"sh /mhqreset.sh\" " & current_user & " >> /private/var/root/" & target_file with administrator privileges
+		
 		do shell script "nvram boot-args=\"-s\"" with administrator privileges
+		
 		tell application "Finder" to restart
 		return -128
 	end try

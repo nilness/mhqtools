@@ -2,9 +2,9 @@
 
 # if there is a parameter then it is the username, otherwise specify a default
 if [ "$1" != "" ]; then
-    username="$@"
+    USER_NAME="$@"
 else
-    username="mhq"
+    USER_NAME="mhq"
 fi
 
 
@@ -34,16 +34,16 @@ case `/usr/bin/sw_vers -productVersion | /usr/bin/awk -F . '{print $2}'` in
    [56]) launchctl load /System/Library/LaunchDaemons/com.apple.DirectoryServices.plist ### start directory services
 
        # remove user from directory services
-       dscl . -delete /groups/_appserveradm GroupMembership "$username"
-       dscl . -delete /groups/_appserverusr GroupMembership "$username"
-       dscl . -delete /groups/_lpadmin GroupMembership "$username"
-       dscl . -delete /groups/admin GroupMembership "$username"
-       dscl . -delete /groups/com.apple.sharepoint.group.1 GroupMembership "$username"
-       dscl . -delete /groups/staff GroupMembership "$username"
+       dscl . -delete /groups/_appserveradm GroupMembership "${USER_NAME}"
+       dscl . -delete /groups/_appserverusr GroupMembership "${USER_NAME}"
+       dscl . -delete /groups/_lpadmin GroupMembership "${USER_NAME}"
+       dscl . -delete /groups/admin GroupMembership "${USER_NAME}"
+       dscl . -delete /groups/com.apple.sharepoint.group.1 GroupMembership "${USER_NAME}"
+       dscl . -delete /groups/staff GroupMembership "${USER_NAME}"
 
-       dscl . -delete /users/"$username"
+       dscl . -delete /users/"${USER_NAME}"
        ;;
-  [789] | 10) rm /var/db/dslocal/nodes/default/users/"$username".plist
+  [789] | 10) rm /var/db/dslocal/nodes/Default/users/"${USER_NAME}".plist
        ;; 
     *) echo "unrecognized system"
        exit
@@ -52,17 +52,28 @@ esac
 
 # further commands will run in all recognized systems
 
+if [ "${USER_NAME}" == "tech" ]; then
+# delete various files installed by tech apps
+rm -rf /Library/Application\ Support/CrashReporter
+rm -rf /Library/Application\ Support/DriveGenius
+rm -rf /Library/Application\ Support/Roxio
+rm /Library/LaunchAgents/com.prosofteng.DGMonitor.plist
+rm /Library/LaunchDaemons/com.bombich.ccc.plist
+rm /Library/LaunchDaemons/com.prosofteng.DriveGenius.locum
+rm -rf /Library/NTFSProgs
+rm /Library/Preferences/com.volitans-software.smartutility.plist
+rm /Library/PrivilegedHelperTools/com.bombich.ccc
+rm /Library/PrivilegedHelperTools/com.prosofteng.DriveGenius.locum
+rm -rf /Applications/Toast\ 11\ Titanium
+
 # delete user folder
-rm -rf /Users/"$username"
+rm -rf /Users/"${USER_NAME}"
 
 # remove setup done file so setup runs on boot
 rm /var/db/.AppleSetupDone
 
 # remove network configuration files
 rm /Library/Preferences/SystemConfiguration/*
-
-# remove tech reset script if present
-rm /techreset.sh
 
 # remove mhq startup item if present
 rm -rf /Library/StartupItems/Set\ SWUpdate\ Server/
