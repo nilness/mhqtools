@@ -35,15 +35,15 @@ case `/usr/bin/sw_vers -productVersion | /usr/bin/awk -F . '{print $2}'` in
 
        # remove user from directory services
        dscl . -delete /groups/_appserveradm GroupMembership "${USER_NAME}"
-       dscl . -delete /groups/_appserverusr GroupMembership "{USER_NAME}"
-       dscl . -delete /groups/_lpadmin GroupMembership "{USER_NAME}"
-       dscl . -delete /groups/admin GroupMembership "{USER_NAME}"
-       dscl . -delete /groups/com.apple.sharepoint.group.1 GroupMembership "{USER_NAME}"
-       dscl . -delete /groups/staff GroupMembership "{USER_NAME}"
+       dscl . -delete /groups/_appserverusr GroupMembership "${USER_NAME}"
+       dscl . -delete /groups/_lpadmin GroupMembership "${USER_NAME}"
+       dscl . -delete /groups/admin GroupMembership "${USER_NAME}"
+       dscl . -delete /groups/com.apple.sharepoint.group.1 GroupMembership "${USER_NAME}"
+       dscl . -delete /groups/staff GroupMembership "${USER_NAME}"
 
-       dscl . -delete /users/"{USER_NAME}"
+       dscl . -delete /users/"${USER_NAME}"
        ;;
-  [789] | 10) rm /var/db/dslocal/nodes/default/users/"{USER_NAME}".plist
+  [789] | 10) rm /var/db/dslocal/nodes/Default/users/"${USER_NAME}".plist
        ;; 
     *) echo "unrecognized system"
        exit
@@ -67,7 +67,7 @@ rm /Library/PrivilegedHelperTools/com.prosofteng.DriveGenius.locum
 rm -rf /Applications/Toast\ 11\ Titanium
 
 # delete user folder
-rm -rf /Users/"{USER_NAME}"
+rm -rf /Users/"${USER_NAME}"
 
 # remove setup done file so setup runs on boot
 rm /var/db/.AppleSetupDone
