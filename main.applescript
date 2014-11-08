@@ -43,9 +43,9 @@ on error
 	
 end try
 
-display dialog osVersion buttons {"OK"}
+--display dialog osVersion buttons {"OK"}
 
-display dialog SWUpdateServer buttons {"OK"}
+--display dialog SWUpdateServer buttons {"OK"}
 
 
 set theButtonNames to {"Set Used Prefs (all *'ed items)", "Set SWUpdateServer*", "List SWUpdateServer", "Remove SWUpdateServer", "Set MacHQ homepage*", "Disable Sleep*", "Rename HD by Size*", "Install MHQ Reset Script", "Remove Current User & Reset CPU", "Install Tech User Reset Script", "Test for Flashback Trojan", "Test for ShellShock vulnerability", "Rebuild Launch Services DB", "Flush DNS Cache", "Reinstall default Fake preferences", "Update Fake Workflows from Server", "Install SWUpdate StartupItem", "Save System Profiler Report to server"}
