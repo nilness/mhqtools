@@ -48,7 +48,7 @@ end try
 --display dialog SWUpdateServer buttons {"OK"}
 
 
-set theButtonNames to {"Set Used Prefs (all *'ed items)", "Set SWUpdateServer*", "List SWUpdateServer", "Remove SWUpdateServer", "Set MacHQ homepage*", "Disable Sleep*", "Rename HD by Size*", "Install MHQ Reset Script", "Remove Current User & Reset CPU", "Install Tech User Reset Script", "Test for Flashback Trojan", "Test for ShellShock vulnerability", "Rebuild Launch Services DB", "Flush DNS Cache", "Reinstall default Fake preferences", "Update Fake Workflows from Server", "Install SWUpdate StartupItem", "Save System Profiler Report to server"}
+set theButtonNames to {"Set Used Prefs (all *'ed items)", "Set SWUpdateServer*", "List SWUpdateServer", "Remove SWUpdateServer", "Set MacHQ homepage*", "Disable Sleep*", "Rename HD by Size*", "Install MHQ Reset Script", "Remove Current User & Reset CPU", "Install Tech User Reset Script", "Test for Flashback Trojan", "Test for ShellShock vulnerability", "Rebuild Launch Services DB", "Flush DNS Cache", "Reset Fake preferences", "Update Fake Workflows from Server", "Install SWUpdate StartupItem", "Save System Profiler Report to server"}
 
 repeat
 	set theChoice to choose from list theButtonNames
@@ -84,7 +84,7 @@ repeat
 		testForFlashbackTrojan()
 	else if theChoice as string is "Rebuild Launch Services DB" then
 		rebuildLaunchServicesDB()
-	else if theChoice as string is "Reinstall default Fake preferences" then
+	else if theChoice as string is "Reset Fake preferences" then
 		reinstallDefaultFakePreferences()
 	else if theChoice as string is "Reinstall Fake Workflows" then
 		reinstallFakeWorkflows()
@@ -357,21 +357,25 @@ on rebuildLaunchServicesDB()
 end rebuildLaunchServicesDB
 
 on reinstallDefaultFakePreferences()
-	set TheFile to ((path to me as string) & "Contents:Resources:com.fakeapp.Fake.plist") as alias
+	
+	--delete the current preference file
+	
 	tell application "Finder"
-		duplicate TheFile to ((path to preferences folder) as alias) with replacing
+		set oldFile to (path to preferences folder as string) & "com.fakeapp.Fake.plist"
+		delete file oldFile
 	end tell
+	
+	
+	-- create new preference file and set the properties we care about
 	set theSetScript to "
 #!/bin/bash
 
-defaults delete com.fakeapp.Fake \"FUWindowFrameString\"
-defaults delete com.fakeapp.Fake \"NSWindow Frame ActionLibrary\"
-defaults delete com.fakeapp.Fake \"NSWindow Frame FUWindow\"
-defaults delete com.fakeapp.Fake \"NSWindow Frame Preferences\"
-defaults delete com.fakeapp.Fake \"WebDatabaseDirectory\"
+touch \"~/Preferences/com.fakeapp.Fake.plist\"
 defaults write com.fakeapp.Fake \"FakeDelayBetweenRunningActions\" '0'
+defaults write com.fakeapp.Fake \"FakePlaySuccessFailureSounds\" '0'
 "
 	do shell script theSetScript
+	
 	
 end reinstallDefaultFakePreferences
 
