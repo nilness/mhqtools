@@ -48,7 +48,7 @@ end try
 --display dialog SWUpdateServer buttons {"OK"}
 
 
-set theButtonNames to {"Set Used Prefs (all *'ed items)", "Set SWUpdateServer*", "List SWUpdateServer", "Remove SWUpdateServer", "Set MacHQ homepage*", "Disable Sleep*", "Rename HD by Size*", "Install MHQ Reset Script", "Remove Current User & Reset CPU", "Install Tech User Reset Script", "Test for Flashback Trojan", "Test for ShellShock vulnerability", "Rebuild Launch Services DB", "Flush DNS Cache", "Reset Fake preferences", "Update Fake Workflows from Server", "Install SWUpdate StartupItem", "Save System Profiler Report to server"}
+set theButtonNames to {"Set Used Prefs (all *'ed items)", "Set SWUpdateServer*", "List SWUpdateServer", "Remove SWUpdateServer", "Set MacHQ homepage*", "Disable Sleep*", "Rename HD by Size*", "Install MHQ Reset Script", "Remove Current User & Reset CPU", "Test for Flashback Trojan", "Test for ShellShock vulnerability", "Rebuild Launch Services DB", "Flush DNS Cache", "Reset Fake preferences", "Update Fake Workflows from Server", "Install SWUpdate StartupItem", "Save System Profiler Report to server"}
 
 repeat
 	set theChoice to choose from list theButtonNames
@@ -78,8 +78,6 @@ repeat
 		if resetThisUserCPU() = -128 then
 			return
 		end if
-	else if theChoice as string is "Install Tech User Reset Script" then
-		installTechResetScript()
 	else if theChoice as string is "Test for Flashback Trojan" then
 		testForFlashbackTrojan()
 	else if theChoice as string is "Rebuild Launch Services DB" then
@@ -280,15 +278,6 @@ on resetThisUserCPU()
 		return -128
 	end try
 end resetThisUserCPU
-
-
-on installTechResetScript()
-	set TheFile to ((path to me as string) & "Contents:Resources:techreset.sh") as alias
-	tell application "Finder"
-		duplicate TheFile to the startup disk with replacing
-	end tell
-	
-end installTechResetScript
 
 
 on InstallSWUpdatePlist()
