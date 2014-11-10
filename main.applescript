@@ -45,7 +45,7 @@ on error
 end try
 
 tell application "Finder"
-	set resources_directory to (container of (path to me) as text)
+	set resources_directory to (container of container of (path to me) as text)
 end tell
 
 
@@ -237,6 +237,8 @@ on installResetScript()
 			set TheFile to (resources_directory & "mhqreset.sh") as alias
 			duplicate TheFile to the startup disk with replacing
 		end tell
+	on error error_message
+		display dialog error_message
 	end try
 end installResetScript
 
