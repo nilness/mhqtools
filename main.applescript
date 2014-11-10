@@ -5,6 +5,7 @@ global osVersion
 global externalIP
 global SWUpdateServer
 global store
+global resources_directory
 
 set osVersion to do shell script "/usr/bin/sw_vers -productVersion | /usr/bin/awk -F . '{print $2}'"
 
@@ -42,6 +43,11 @@ on error
 	end if
 	
 end try
+
+tell application "Finder"
+	set resources_directory to (container of (path to me) as text)
+end tell
+
 
 --display dialog osVersion buttons {"OK"}
 
@@ -227,8 +233,8 @@ end setSWUpdateServer
 
 on installResetScript()
 	try
-		set TheFile to ((path to me as string) & "Contents:Resources:mhqreset.sh") as alias
 		tell application "Finder"
+			set TheFile to (resources_directory & "mhqreset.sh") as alias
 			duplicate TheFile to the startup disk with replacing
 		end tell
 	end try
@@ -279,10 +285,9 @@ on resetThisUserCPU()
 	end try
 end resetThisUserCPU
 
-
 on InstallSWUpdatePlist()
 	
-	set TheFile to ((path to me as string) & "Contents:Resources:Set SWUpdate Server") as alias
+	set TheFile to (resources_directory & "Set SWUpdate Server") as alias
 	
 	if (osVersion as number > 7) then
 		
@@ -372,7 +377,7 @@ end reinstallDefaultFakePreferences
 on reinstallFakeWorkflows()
 	set oldFolder to (path to application support from user domain as text) & "Fake:Workflows:"
 	set fakeFolder to (path to application support from user domain as text) & "Fake:"
-	set newFolder to ((path to me as string) & "Contents:Resources:Workflows") as alias
+	set newFolder to (resources_directory & "Workflows") as alias
 	--	display dialog oldFolder buttons {"OK"}
 	tell application "Finder"
 		try
