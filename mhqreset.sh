@@ -65,6 +65,7 @@ rm /Library/Preferences/com.volitans-software.smartutility.plist
 rm /Library/PrivilegedHelperTools/com.bombich.ccc
 rm /Library/PrivilegedHelperTools/com.prosofteng.DriveGenius.locum
 rm -rf /Applications/Toast\ 11\ Titanium
+fi
 
 # delete user folder
 rm -rf /Users/"${USER_NAME}"
