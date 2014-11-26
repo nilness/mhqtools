@@ -9,6 +9,26 @@ global resources_directory
 
 set osVersion to do shell script "/usr/bin/sw_vers -productVersion | /usr/bin/awk -F . '{print $2}'"
 
+--first see if we need to update the "launcher" side of the script
+try
+	set local_file to the POSIX path of ((path to me as string) & "Contents:Resources:launcher.version")
+	set local_version to do shell script "/bin/cat \"" & local_file & "\""
+
+	set current_version to do shell script "/usr/bin/curl https://raw.githubusercontent.com/nilness/mhqtools/master/launcher.version"
+	--display dialog "Local version of main is: " & local_version & ", current version is: " & current_version
+	
+	if current_version > local_version then
+		
+		--download the new version
+		set local_file to the POSIX path of ((path to me as string) & "Contents:Resources:Scripts:main.scpt")
+		do shell script "curl https://raw.githubusercontent.com/nilness/mhqtools/master/main.scpt > \"" & local_file & "\""
+		--update the local version string
+		set local_file to the POSIX path of ((path to me as string) & "Contents:Resources:launcher.version")
+		do shell script "curl https://raw.githubusercontent.com/nilness/mhqtools/master/launcher.version > \"" & local_file & "\""
+		
+	end if
+end try
+
 try
 	set externalIP to do shell script "/usr/bin/curl http://icanhazip.com/"
 	
