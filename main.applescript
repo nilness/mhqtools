@@ -44,6 +44,31 @@ on error
 	
 end try
 
+--check for updates to the updater script
+try
+	tell application "Finder"
+		set scripts_directory to (container of (path to me) as text)
+		set resources_directory to (container of container of (path to me) as text)
+	end tell
+	
+	set local_file to the POSIX path of (resources_directory & "updater.version")
+	set local_version to do shell script "/bin/cat \"" & local_file & "\""
+	
+	set current_version to do shell script "/usr/bin/curl https://raw.githubusercontent.com/nilness/mhqtools/master/updater.version"
+	--display dialog "Local version of updater is: " & local_version & ", current version is: " & current_version
+	
+	if current_version > local_version then
+		
+		--download the new version
+		set local_file to the POSIX path of (scripts_directory & "updater.applescript")
+		do shell script "curl https://raw.githubusercontent.com/nilness/mhqtools/master/updater.applescript > \"" & local_file & "\""
+		--update the local version string
+		set local_file to the POSIX path of (resources_directory & "updater.version")
+		do shell script "curl https://raw.githubusercontent.com/nilness/mhqtools/master/updater.version > \"" & local_file & "\""
+		
+	end if
+end try
+
 tell application "Finder"
 	set resources_directory to (container of container of (path to me) as text)
 end tell
