@@ -15,7 +15,7 @@ try
 	if current_version > local_version then
 		
 		--download the new version
-		set local_file to the POSIX path of (resources_directory & "main.applescript")
+		set local_file to the POSIX path of (scripts_directory & "main.applescript")
 		do shell script "curl https://raw.githubusercontent.com/nilness/mhqtools/master/main.applescript > \"" & local_file & "\""
 		--update the local version string
 		set local_file to the POSIX path of (resources_directory & "main.version")
