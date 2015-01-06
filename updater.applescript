@@ -16,10 +16,10 @@ try
 		
 		--download the new version
 		set local_file to the POSIX path of (scripts_directory & "main.applescript")
-		do shell script "curl https://raw.githubusercontent.com/nilness/mhqtools/master/main.applescript > \"" & local_file & "\""
+		do shell script "/usr/bin/curl https://raw.githubusercontent.com/nilness/mhqtools/master/main.applescript > \"" & local_file & "\""
 		--update the local version string
 		set local_file to the POSIX path of (resources_directory & "main.version")
-		do shell script "curl https://raw.githubusercontent.com/nilness/mhqtools/master/main.version > \"" & local_file & "\""
+		do shell script "/usr/bin/curl https://raw.githubusercontent.com/nilness/mhqtools/master/main.version > \"" & local_file & "\""
 		
 	end if
 	
@@ -33,10 +33,10 @@ try
 	if current_version > local_version then
 		--download the new version
 		set local_file to the POSIX path of (resources_directory & "mhqreset.sh")
-		do shell script "curl https://raw.githubusercontent.com/nilness/mhqtools/master/mhqreset.sh > \"" & local_file & "\""
+		do shell script "/usr/bin/curl https://raw.githubusercontent.com/nilness/mhqtools/master/mhqreset.sh > \"" & local_file & "\""
 		--update the local version string
 		set local_file to the POSIX path of (resources_directory & "mhqreset.version")
-		do shell script "curl https://raw.githubusercontent.com/nilness/mhqtools/master/mhqreset.version > \"" & local_file & "\""
+		do shell script "/usr/bin/curl https://raw.githubusercontent.com/nilness/mhqtools/master/mhqreset.version > \"" & local_file & "\""
 		--display dialog "Need to update reset script!"
 	end if
 	
