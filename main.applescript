@@ -61,10 +61,10 @@ try
 		
 		--download the new version
 		set local_file to the POSIX path of (scripts_directory & "updater.applescript")
-		do shell script "curl https://raw.githubusercontent.com/nilness/mhqtools/master/updater.applescript > \"" & local_file & "\""
+		do shell script "/usr/bin/curl https://raw.githubusercontent.com/nilness/mhqtools/master/updater.applescript > \"" & local_file & "\""
 		--update the local version string
 		set local_file to the POSIX path of (resources_directory & "updater.version")
-		do shell script "curl https://raw.githubusercontent.com/nilness/mhqtools/master/updater.version > \"" & local_file & "\""
+		do shell script "/usr/bin/curl https://raw.githubusercontent.com/nilness/mhqtools/master/updater.version > \"" & local_file & "\""
 		
 	end if
 end try
