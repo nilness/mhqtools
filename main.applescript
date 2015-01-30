@@ -20,7 +20,7 @@ try
 	
 	if externalIP is test1 then
 		set store to "001"
-		set SWUpdateServer to "mhq-swupdate.local:8088"
+		set SWUpdateServer to "netboot-station.local:8088"
 	else if externalIP is test2 then
 		set store to "002"
 		set SWUpdateServer to "xserve.local:8088"
@@ -35,7 +35,7 @@ on error
 	set theStore to choose from list theStoreList with title "Help!" with prompt "Where are we?"
 	
 	if theStore as string is "St. Louis" then
-		set SWUpdateServer to "mhq-swupdate.local:8088"
+		set SWUpdateServer to "netboot-station.local:8088"
 	else if theStore as string is "O'Fallon" then
 		set SWUpdateServer to "xserve.local:8088"
 	else if theStore as string is "Cedar Rapids" then
@@ -239,7 +239,7 @@ URL1='http://" & SWUpdateServer & "'
 	7) URL=\"${URL1}/index-lion-snowleopard-leopard.merged-1.sucatalog\" ;;
 	8) URL=\"${URL1}/index-mountainlion-lion-snowleopard-leopard.merged-1.sucatalog\" ;;
 	9) URL=\"${URL1}/index-10.9-mountainlion-lion-snowleopard-leopard.merged-1.sucatalog\" ;;
-	10) URL=\"${URL1}/index-10.10-10.9-mountainlion-lion-snowleopard-leopard.merged-1.sucatalog\" ;;
+	10) exit; URL=\"${URL1}/index-10.10-10.9-mountainlion-lion-snowleopard-leopard.merged-1.sucatalog\" ;;
       *) echo \"Unsupported client OS\"; exit 1 ;;
     esac
 
