@@ -183,7 +183,7 @@ on resetSWUpdateServer()
 	try
 		--if running in 10.7 or later we need to supply password
 		
-		if (osVersion as number > 7) then
+		if (osVersion as number > 6) then
 			do shell script "defaults delete /Library/Preferences/com.apple.SoftwareUpdate CatalogURL" with administrator privileges
 		else
 			do shell script "/usr/bin/defaults delete /Library/Preferences/com.apple.SoftwareUpdate CatalogURL"
@@ -246,9 +246,9 @@ URL1='http://" & SWUpdateServer & "'
 /usr/bin/defaults write /Library/Preferences/com.apple.SoftwareUpdate CatalogURL \"${URL}\"
 	
 	"
-	--if running in 10.7 or 10.8 we need to supply password
+	--if running in 10.7 or later we need to supply password
 	try
-		if (osVersion as number > 7) then
+		if (osVersion as number > 6) then
 			do shell script theSetScript with administrator privileges
 		else
 			do shell script theSetScript
