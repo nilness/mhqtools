@@ -82,6 +82,11 @@ rm -rf /Library/StartupItems/Set\ SWUpdate\ Server/
 # remove machq swupdate server setting
 defaults delete /Library/Preferences/com.apple.SoftwareUpdate CatalogURL
 
+# remove machq power settings & schedules
+
+rm /Library/Preferences/SystemConfiguration/com.apple.PowerManagement.plist
+rm /Library/Preferences/SystemConfiguration/com.apple.AutoWake.plist
+
 # remove this script & root user .profile
 rm $0
 rm /private/var/root/.profile
