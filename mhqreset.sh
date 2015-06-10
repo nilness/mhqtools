@@ -94,6 +94,8 @@ defaults delete /Library/Preferences/com.apple.SoftwareUpdate CatalogURL
 echo "*** Removing power settings & schedules ***"
 rm /Library/Preferences/SystemConfiguration/com.apple.PowerManagement.plist
 rm /Library/Preferences/SystemConfiguration/com.apple.AutoWake.plist
+rm /Library/LaunchDaemons/com.machq.SetPowerSchedule.plist
+rm /usr/local/mhq/set_power_schedule.sh
 
 # remove this script & root user .profile
 echo "*** Removing this script ***"
