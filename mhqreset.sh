@@ -95,7 +95,9 @@ echo "*** Removing power settings & schedules ***"
 rm /Library/Preferences/SystemConfiguration/com.apple.PowerManagement.plist
 rm /Library/Preferences/SystemConfiguration/com.apple.AutoWake.plist
 rm /Library/LaunchDaemons/com.machq.SetPowerSchedule.plist
-rm /usr/local/mhq/set_power_schedule.sh
+
+# remove machq /usr/local folder
+rm -rf /usr/local/mhq/
 
 # remove this script & root user .profile
 echo "*** Removing this script ***"
