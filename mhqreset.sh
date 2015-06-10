@@ -22,11 +22,13 @@ exit
 fi
 
 # check and mount the hard drive
+echo "*** Mounting file system ***"
 /sbin/fsck -fy
 /sbin/mount -uw /
 
 
 # we remove the user account differently based on which version of the OS we're running on
+echo "*** Removing user account ***"
 case `/usr/bin/sw_vers -productVersion | /usr/bin/awk -F . '{print $2}'` in
 
    [34]) rm -rf /var/db/netinfo/local.nidb ### remove the netinfo db file in 10.3 & 10.4
@@ -45,7 +47,7 @@ case `/usr/bin/sw_vers -productVersion | /usr/bin/awk -F . '{print $2}'` in
        ;;
   [789] | 10) rm /var/db/dslocal/nodes/Default/users/"${USER_NAME}".plist
        ;; 
-    *) echo "unrecognized system"
+    *) echo "Unrecognized System Version - user account was NOT removed"
        exit
        ;;
 esac
@@ -53,6 +55,7 @@ esac
 # further commands will run in all recognized systems
 
 if [ "${USER_NAME}" == "tech" ]; then
+echo "*** Removing tech user additional items ***"
 # delete various files installed by tech apps
 rm -rf /Library/Application\ Support/CrashReporter
 rm -rf /Library/Application\ Support/DriveGenius
@@ -68,26 +71,32 @@ rm -rf /Applications/Toast\ 11\ Titanium
 fi
 
 # delete user folder
+echo "*** Deleting user folder ***"
 rm -rf /Users/"${USER_NAME}"
 
 # remove setup done file so setup runs on boot
+echo "*** Re-enabling Setup Assistant ***"
 rm /var/db/.AppleSetupDone
 
 # remove network configuration files
+echo "*** Removing network configuration ***"
 rm /Library/Preferences/SystemConfiguration/*
 
 # remove mhq startup item if present
+echo "*** Removing MacHQ Startup Item ***"
 rm -rf /Library/StartupItems/Set\ SWUpdate\ Server/
 
 # remove machq swupdate server setting
+echo "*** Removing Software Update Server settings ***"
 defaults delete /Library/Preferences/com.apple.SoftwareUpdate CatalogURL
 
 # remove machq power settings & schedules
-
+echo "*** Removing power settings & schedules ***"
 rm /Library/Preferences/SystemConfiguration/com.apple.PowerManagement.plist
 rm /Library/Preferences/SystemConfiguration/com.apple.AutoWake.plist
 
 # remove this script & root user .profile
+echo "*** Removing this script ***"
 rm $0
 rm /private/var/root/.profile
 rm /private/var/root/.bashrc
