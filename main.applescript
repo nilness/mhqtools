@@ -364,8 +364,10 @@ on reinstallDefaultFakePreferences()
 	--delete the current preference file
 	
 	tell application "Finder"
-		set oldFile to (path to preferences folder as string) & "com.fakeapp.Fake.plist"
-		delete file oldFile
+		try
+			set oldFile to (path to preferences folder as string) & "com.fakeapp.Fake.plist"
+			delete file oldFile
+		end try
 	end tell
 	
 	
