@@ -147,27 +147,9 @@ on setHomePage()
 		-- we don't really need the alias; we're just checking to see if it exists
 		fileTarget as alias
 	on error
-		tell application "Safari"
-			activate
-		end tell
+		do shell script "touch " & fileTarget
 	end try
-	if running of application "Safari" then
-		tell application "Safari"
-			quit
-		end tell
-		repeat while (running of application "Safari")
-			delay 1
-		end repeat
-		delay 2
-	end if
 	do shell script "defaults write com.apple.Safari HomePage http://twitter.com/machq; defaults write com.apple.Safari NewWindowBehavior 0"
-	delay 2
-	tell application "Safari"
-		activate
-		delay 2
-		close every window
-		quit
-	end tell
 end setHomePage
 
 on listSWUpdateServer()
