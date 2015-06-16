@@ -238,7 +238,7 @@ end setSWUpdateServer
 on installResetScript()
 	try
 		tell application "Finder"
-			set TheFile to (resources_directory & "mhqreset.sh") as alias
+			set TheFile to (scripts_directory & "mhqreset.sh") as alias
 			duplicate TheFile to the startup disk with replacing
 		end tell
 	on error error_message
