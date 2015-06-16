@@ -486,3 +486,8 @@ end UpdateWorkflowsFromServer
 on testForShellShockVulnerability()
 	
 end testForShellShockVulnerability
+
+on log_event(themessage)
+	set theLine to (do shell script "date  +'%Y-%m-%d %H:%M:%S'" as string) & " " & themessage
+	do shell script "echo " & theLine & " >> " & quoted form of (POSIX path of (resources_directory & "error.log"))
+end log_event
