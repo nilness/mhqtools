@@ -1,16 +1,10 @@
 global scripts_directory
 global resources_directory
 
-try
 	tell application "Finder"
 		set scripts_directory to (container of (path to me) as text)
 		set resources_directory to (container of container of (path to me) as text)
 	end tell
-	
-on error errStr number errorNumber
-	log_event("Error #" & errorNumber & " - " & errStr & " while setting directories")
-	
-end try
 
 log_event("Scripts directory is: " & scripts_directory)
 log_event("Resources directory is: " & resources_directory)
