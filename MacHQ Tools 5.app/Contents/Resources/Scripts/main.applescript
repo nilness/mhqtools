@@ -1,6 +1,3 @@
--- This is the master machq script to replace all others!
--- First find out the version of OS X
-
 global osVersion
 global externalIP
 global SWUpdateServer
@@ -8,30 +5,42 @@ global store
 global scripts_directory
 global resources_directory
 
-set osVersion to do shell script "/usr/bin/sw_vers -productVersion | /usr/bin/awk -F . '{print $2}'"
+-- check for updates to the updater script
+try
+	tell application "Finder"
+		set scripts_directory to (container of (path to me) as text)
+		set resources_directory to (container of container of (path to me) as text)
+	end tell
+	
+	log_event("Scripts directory is: " & scripts_directory)
+	log_event("Resources directory is: " & resources_directory)
+	
+	check_and_update("updater.version", "updater.applescript", scripts_directory)
+	
+end try
 
+-- get the OS versin
+set osVersion to do shell script "/usr/bin/sw_vers -productVersion | /usr/bin/awk -F . '{print $2}'"
+log_event("OS version: " & osVersion)
+
+-- try to determine which store we're in
 try
 	set externalIP to do shell script "/usr/bin/curl http://icanhazip.com/"
 	
-	set test1 to do shell script "/usr/bin/dig +short 001.machq.com"
-	set test2 to do shell script "/usr/bin/dig +short 002.machq.com"
-	set test3 to do shell script "/usr/bin/dig +short 003.machq.com"
-	
-	
-	
-	if externalIP is test1 then
+	if externalIP is equal to (do shell script "/usr/bin/dig +short 001.machq.com") then
 		set store to "001"
 		set SWUpdateServer to "netboot-station.local:8088"
-	else if externalIP is test2 then
+	else if externalIP is equal to (do shell script "/usr/bin/dig +short 002.machq.com") then
 		set store to "002"
 		set SWUpdateServer to "xserve.local:8088"
-	else if externalIP is test3 then
+	else if externalIP is equal to (do shell script "/usr/bin/dig +short 003.machq.com") then
 		set store to "003"
 		set SWUpdateServer to "servercdr.local:8088"
 	end if
 	
 on error
 	--can't determine which store automatically
+	log_event("Unable to determine city")
 	set theStoreList to {"St. Louis", "O'Fallon", "Cedar Rapids"}
 	set theStore to choose from list theStoreList with title "Help!" with prompt "Where are we?"
 	
@@ -44,31 +53,37 @@ on error
 	end if
 	
 end try
-
---check for updates to the updater script
-try
-	tell application "Finder"
-		set scripts_directory to (container of (path to me) as text)
-		set resources_directory to (container of container of (path to me) as text)
-	end tell
-	
-	log_event("Scripts directory is: " & scripts_directory)
-	log_event("Resources directory is: " & resources_directory)
-	
-		check_and_update("updater.version", "updater.applescript", scripts_directory)
-	
-end try
-
-tell application "Finder"
-	set resources_directory to (container of container of (path to me) as text)
-end tell
+log_event("SWUpdateServer is: " & SWUpdateServer)
 
 
 
-set theButtonNames to {"Set Used Prefs (all *'ed items)", "Set SWUpdateServer*", "List SWUpdateServer", "Remove SWUpdateServer", "Set MacHQ homepage*", "Disable Sleep*", "Rename HD by Size*", "Install MHQ Reset Script", "Remove Current User & Reset CPU", "Test for Flashback Trojan", "Test for ShellShock vulnerability", "Rebuild Launch Services DB", "Flush DNS Cache", "Reset Fake preferences", "Update Fake Workflows from Server", "Install SWUpdate StartupItem", "Save System Profiler Report to server"}
+
+set theButtonNames to {}
+
+set theButtonNames to theButtonNames & {"Set SWUpdateServer*"}
+set theButtonNames to theButtonNames & {"List SWUpdateServer"}
+set theButtonNames to theButtonNames & {"Remove SWUpdateServer"}
+set theButtonNames to theButtonNames & {"-------------------------------"}
+set theButtonNames to theButtonNames & {"Set Used Prefs (all *'ed items)"}
+set theButtonNames to theButtonNames & {"Set MacHQ homepage*"}
+set theButtonNames to theButtonNames & {"Disable Sleep*"}
+set theButtonNames to theButtonNames & {"Rename HD by Size*"}
+set theButtonNames to theButtonNames & {"-------------------------------"}
+set theButtonNames to theButtonNames & {"Install MHQ Reset Script"}
+set theButtonNames to theButtonNames & {"Remove Current User & Reset CPU"}
+set theButtonNames to theButtonNames & {"-------------------------------"}
+set theButtonNames to theButtonNames & {"Test for Flashback Trojan"}
+set theButtonNames to theButtonNames & {"Test for ShellShock vulnerability"}
+set theButtonNames to theButtonNames & {"-------------------------------"}
+set theButtonNames to theButtonNames & {"Rebuild Launch Services DB"}
+set theButtonNames to theButtonNames & {"Flush DNS Cache"}
+set theButtonNames to theButtonNames & {"Reset Fake preferences"}
+--set theButtonNames to theButtonNames & {"Update Fake Workflows from Server"}
+set theButtonNames to theButtonNames & {"Install SWUpdate StartupItem"}
+--set theButtonNames to theButtonNames & {"Save System Profiler Report to server"}
 
 repeat
-	set theChoice to choose from list theButtonNames
+	set theChoice to choose from list theButtonNames with title "MacHQ Tools" with prompt "Please choose an action:" cancel button name "Quit"
 	if theChoice is false then
 		exit repeat
 	else if theChoice as string is "Set SWUpdateServer*" then
@@ -113,11 +128,11 @@ repeat
 		UpdateWorkflowsFromServer()
 	else if theChoice as string is "Test for ShellShock vulnerability" then
 		run script file (scripts_directory & "test_shellshock.applescript")
-	else
-		tell me to quit
 	end if
 	
 end repeat
+
+return
 
 on setUsedPrefs()
 	disableSleep()
@@ -208,6 +223,7 @@ URL1='http://" & SWUpdateServer & "'
 	8) URL=\"${URL1}/index-mountainlion-lion-snowleopard-leopard.merged-1.sucatalog\" ;;
 	9) URL=\"${URL1}/index-10.9-mountainlion-lion-snowleopard-leopard.merged-1.sucatalog\" ;;
 	10) URL=\"${URL1}/index-10.10-10.9-mountainlion-lion-snowleopard-leopard.merged-1.sucatalog\" ;;
+	11) URL=\"${URL1}/index-10.11-10.10-10.9-mountainlion-lion-snowleopard-leopard.merged-1.sucatalog\" ;;
       *) echo \"Unsupported client OS\"; exit 1 ;;
     esac
 
@@ -240,7 +256,7 @@ on resetUserCPU()
 		display dialog "This will install the MHQ reset script and restart the computer into single user mode, then run the reset script automatically. Do you wish to continue?" buttons {"Quit", "Continue"} default button "Continue" cancel button "Quit"
 		installResetScript()
 		
-		if osVersion is "10" then
+		if osVersion as number > 9 then
 			set target_file to ".bashrc"
 		else
 			set target_file to ".profile"
@@ -265,7 +281,7 @@ on resetThisUserCPU()
 		display dialog "Are you absolutely certain?. The user \"" & current_user & "\" will be deleted with all it's files. Do you wish to continue?" buttons {"Quit", "Continue"} default button "Continue" cancel button "Quit"
 		installResetScript()
 		
-		if osVersion is "10" then
+		if osVersion as number > 9 then
 			set target_file to ".bashrc"
 		else
 			set target_file to ".profile"
@@ -473,9 +489,6 @@ on UpdateWorkflowsFromServer()
 	
 end UpdateWorkflowsFromServer
 
-on testForShellShockVulnerability()
-	
-end testForShellShockVulnerability
 
 on check_and_update(version_file, content_file, content_directory)
 	
@@ -507,9 +520,6 @@ on check_and_update(version_file, content_file, content_directory)
 	end if
 	
 	log_event("Checking " & content_file & " versions - local: " & local_version & ", current: " & current_version)
-	--log_event("Checking " & content_file & " is: " & local_version & ", current version is: " & current_version)
-	
-	
 	if (current_version > local_version) then
 		--download the new version
 		do shell script "/usr/bin/curl https://raw.githubusercontent.com/nilness/mhqtools/master/MacHQ%20Tools%205.app/Contents/Resources/Scripts/" & content_file & " > " & quoted form of local_file
