@@ -207,7 +207,7 @@ fi
 
 disk_size=`system_profiler SPSerialATADataType |sed '/^ *Capacity: */!d;s###' | awk '{print int($1+0.5)  $2\" HD\"}' | head -n 1 `
 
-if [ -z cs_size ]; then
+if [ -z ${cs_size} ]; then
     diskutil rename \"${boot_disk}\" \"${disk_size}\"
 else
     diskutil rename \"${boot_disk}\" \"${cs_size}${cs_unit} HD\"
