@@ -191,9 +191,27 @@ boot_vol=`bless --getBoot`
 
 boot_disk=`diskutil info ${boot_vol} |sed '/^ *Volume Name: */!d;s###'`
 
+# check for size of core storage volume - will be empty if no cs volume or cs not supported
+# cs_size=`diskutil cs list | grep 'Size (Total)' | awk '{print $5$6}' | tr -d '()'`
+
+cs_size=`diskutil cs list | awk '/Size/{print}' | sed -n -e 1p | tr '()' '\\n' | head -2 | tail -1 | awk '{print $1}'`
+ # returns the size portion of the first logical volume group (not the unit)
+
+cs_unit=`diskutil cs list | awk '/Size/{print}' | sed -n -e 1p | tr '()' '\\n' | head -2 | tail -1 | awk '{print $2}'`
+ # returns the unit portion of the first logical volume group
+
+if [ $cs_unit = \"GB\" ]; then
+   cs_size=`echo \"($cs_size+0.5)/1\" | bc`
+fi
+
+
 disk_size=`system_profiler SPSerialATADataType |sed '/^ *Capacity: */!d;s###' | awk '{print int($1+0.5)  $2\" HD\"}' | head -n 1 `
 
-diskutil rename \"${boot_disk}\" \"${disk_size}\"
+if [ -z cs_size ]; then
+    diskutil rename \"${boot_disk}\" \"${disk_size}\"
+else
+    diskutil rename \"${boot_disk}\" \"${cs_size}${cs_unit} HD\"
+fi
 
 # Show icons for hard drives, servers, and removable media on the desktop
 #defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true
