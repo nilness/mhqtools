@@ -50,6 +50,8 @@ on error
 		set SWUpdateServer to "xserve.local:8088"
 	else if theStore as string is "Cedar Rapids" then
 		set SWUpdateServer to "servercdr.local:8088"
+	else
+		set SWUpdateServer to "undefined"
 	end if
 	
 end try
