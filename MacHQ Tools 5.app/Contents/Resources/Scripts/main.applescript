@@ -299,7 +299,7 @@ on resetThisUserCPU()
 		
 		display dialog "This will install the MHQ reset script and restart the computer into single user mode, then run the reset script automatically. The user \"" & current_user & "\" will be deleted with all it's files. Do you wish to continue?" buttons {"Quit", "Continue"} default button "Continue" cancel button "Quit"
 		display dialog "Are you absolutely certain?. The user \"" & current_user & "\" will be deleted with all it's files. Do you wish to continue?" buttons {"Quit", "Continue"} default button "Continue" cancel button "Quit"
-		installResetScript()
+		--installResetScript()
 		
 		if osVersion as number > 9 then
 			set target_file to ".bashrc"
@@ -307,7 +307,10 @@ on resetThisUserCPU()
 			set target_file to ".profile"
 		end if
 		
-		do shell script "echo \"sh /mhqreset.sh\" " & current_user & " >> /private/var/root/" & target_file with administrator privileges
+		set TheFile to POSIX path of (scripts_directory & "mhqreset.sh")
+		set TheFile to quoted form of TheFile
+		
+		do shell script "echo \"sh " & TheFile & "\" " & current_user & " >> /private/var/root/" & target_file with administrator privileges
 		
 		do shell script "nvram boot-args=\"-s\"" with administrator privileges
 		
