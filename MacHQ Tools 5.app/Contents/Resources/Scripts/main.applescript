@@ -276,7 +276,7 @@ on resetUserCPU()
 		display dialog "This will install the MHQ reset script and restart the computer into single user mode, then run the reset script automatically. Do you wish to continue?" buttons {"Quit", "Continue"} default button "Continue" cancel button "Quit"
 		installResetScript()
 		
-		if osVersion as number > 9 then
+		if osVersion as number = 10 then
 			set target_file to ".bashrc"
 		else
 			set target_file to ".profile"
@@ -301,7 +301,7 @@ on resetThisUserCPU()
 		display dialog "Are you absolutely certain?. The user \"" & current_user & "\" will be deleted with all it's files. Do you wish to continue?" buttons {"Quit", "Continue"} default button "Continue" cancel button "Quit"
 		--installResetScript()
 		
-		if osVersion as number > 9 then
+		if osVersion as number = 10 then
 			set target_file to ".bashrc"
 		else
 			set target_file to ".profile"
@@ -415,8 +415,7 @@ case `/usr/bin/sw_vers -productVersion | /usr/bin/awk -F . '{print $2}'` in
     4) lookupd -flushcache ;;   
    [56]) dscacheutil -flushcache ;;      
    [78]) sudo killall -HUP mDNSResponder ;;
-    9) dscacheutil -flushcache; sudo killall -HUP mDNSResponder ;;
-  10) dscacheutil -flushcache; sudo discoveryutil mdnsflushcache ;;
+    9 | 10 | 11) dscacheutil -flushcache; sudo killall -HUP mDNSResponder ;;
       *) echo \"Unsupported client OS\"; exit 1 ;;
 esac
 "
