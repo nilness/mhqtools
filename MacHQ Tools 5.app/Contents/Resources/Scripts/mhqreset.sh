@@ -45,7 +45,7 @@ case `/usr/bin/sw_vers -productVersion | /usr/bin/awk -F . '{print $2}'` in
 
        dscl . -delete /users/"${USER_NAME}"
        ;;
-  [789] | 10) rm /var/db/dslocal/nodes/Default/users/"${USER_NAME}".plist
+  [789] | 10 | 11) rm /var/db/dslocal/nodes/Default/users/"${USER_NAME}".plist
        ;; 
     *) echo "Unrecognized System Version - user account was NOT removed"
        exit
