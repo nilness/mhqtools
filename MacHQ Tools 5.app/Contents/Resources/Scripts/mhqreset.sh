@@ -80,7 +80,7 @@ rm /var/db/.AppleSetupDone
 
 # remove network configuration files
 echo "********************************* Removing network configuration"
-rm /Library/Preferences/SystemConfiguration/*
+rm -rf /Library/Preferences/SystemConfiguration/*
 
 # remove mhq startup item if present
 echo "********************************* Removing MacHQ Startup Item"
