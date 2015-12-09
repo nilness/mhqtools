@@ -2,7 +2,7 @@
 
 # if there is a parameter then it is the username, otherwise specify a default
 if [ "$1" != "" ]; then
-    USER_NAME="$@"
+    USER_NAME="$*"
 else
     USER_NAME="mhq"
 fi
@@ -11,7 +11,7 @@ fi
 # try to verify single-user mode!
 
 # current_user=`/usr/bin/whoami`
-#if [ `/usr/bin/whoami` != "root" ]; then
+#if [ $(/usr/bin/whoami) != "root" ]; then
 #echo "Script must be run as root"
 #exit
 #fi
@@ -29,7 +29,7 @@ echo "********************************* Mounting file system"
 
 # we remove the user account differently based on which version of the OS we're running on
 echo "********************************* Removing user account"
-case `/usr/bin/sw_vers -productVersion | /usr/bin/awk -F . '{print $2}'` in
+case $(/usr/bin/sw_vers -productVersion | /usr/bin/awk -F . '{print $2}') in
 
    [34]) rm -rf /var/db/netinfo/local.nidb ### remove the netinfo db file in 10.3 & 10.4
        ;;
@@ -106,7 +106,7 @@ rm -rf /usr/local/mhq/
 
 # remove this script & root user .profile
 echo "********************************* Removing this script"
-rm $0
+rm "$0"
 rm /private/var/root/.profile
 rm /private/var/root/.bashrc
 
