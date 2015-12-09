@@ -32,10 +32,10 @@ try
 		set SWUpdateServer to "netboot-station.local:8088"
 	else if externalIP is equal to (do shell script "/usr/bin/dig +short 002.machq.com") then
 		set store to "002"
-		set SWUpdateServer to "xserve.local:8088"
+		set SWUpdateServer to "fileserver.local:8088"
 	else if externalIP is equal to (do shell script "/usr/bin/dig +short 003.machq.com") then
 		set store to "003"
-		set SWUpdateServer to "servercdr.local:8088"
+		set SWUpdateServer to "netboot-station.local:8088"
 	end if
 	
 on error
@@ -47,9 +47,9 @@ on error
 	if theStore as string is "St. Louis" then
 		set SWUpdateServer to "netboot-station.local:8088"
 	else if theStore as string is "O'Fallon" then
-		set SWUpdateServer to "xserve.local:8088"
+		set SWUpdateServer to "fileserver.local:8088"
 	else if theStore as string is "Cedar Rapids" then
-		set SWUpdateServer to "servercdr.local:8088"
+		set SWUpdateServer to "netboot-station.local:8088"
 	else
 		set SWUpdateServer to "undefined"
 	end if
@@ -189,25 +189,25 @@ on renameHDbySize()
 
 #!/bin/bash
 
-boot_vol=`bless --getBoot`
+boot_vol=$(bless --getBoot)
 
-boot_disk=`diskutil info ${boot_vol} |sed '/^ *Volume Name: */!d;s###'`
+boot_disk=$(diskutil info ${boot_vol} |sed '/^ *Volume Name: */!d;s###')
 
 # check for size of core storage volume - will be empty if no cs volume or cs not supported
-# cs_size=`diskutil cs list | grep 'Size (Total)' | awk '{print $5$6}' | tr -d '()'`
+# cs_size=$(diskutil cs list | grep 'Size (Total)' | awk '{print $5$6}' | tr -d '()')
 
-cs_size=`diskutil cs list | awk '/Size/{print}' | sed -n -e 1p | tr '()' '\\n' | head -2 | tail -1 | awk '{print $1}'`
+cs_size=$(diskutil cs list | awk '/Size/{print}' | sed -n -e 1p | tr '()' '\\n' | head -2 | tail -1 | awk '{print $1}')
  # returns the size portion of the first logical volume group (not the unit)
 
-cs_unit=`diskutil cs list | awk '/Size/{print}' | sed -n -e 1p | tr '()' '\\n' | head -2 | tail -1 | awk '{print $2}'`
+cs_unit=$(diskutil cs list | awk '/Size/{print}' | sed -n -e 1p | tr '()' '\\n' | head -2 | tail -1 | awk '{print $2}')
  # returns the unit portion of the first logical volume group
 
 if [ $cs_unit = \"GB\" ]; then
-   cs_size=`echo \"($cs_size+0.5)/1\" | bc`
+   cs_size=$(echo \"($cs_size+0.5)/1\" | bc)
 fi
 
 
-disk_size=`system_profiler SPSerialATADataType |sed '/^ *Capacity: */!d;s###' | awk '{print int($1+0.5)  $2\" HD\"}' | head -n 1 `
+disk_size=$(system_profiler SPSerialATADataType |sed '/^ *Capacity: */!d;s###' | awk '{print int($1+0.5)  $2\" HD\"}' | head -n 1)
 
 if [ -z ${cs_size} ]; then
     diskutil rename \"${boot_disk}\" \"${disk_size}\"
@@ -235,7 +235,7 @@ on setSWUpdateServer()
 #!/bin/bash
 
 URL1='http://" & SWUpdateServer & "'
-    case `/usr/bin/sw_vers -productVersion | /usr/bin/awk -F . '{print $2}'` in
+    case $(/usr/bin/sw_vers -productVersion | /usr/bin/awk -F . '{print $2}') in
       4) URL=\"${URL1}/index.sucatalog\" ;;   
       5) URL=\"${URL1}/index-leopard.merged-1.sucatalog\" ;;      
       6) URL=\"${URL1}/index-leopard-snowleopard.merged-1.sucatalog\" ;;    
@@ -411,7 +411,7 @@ on FlushDNSCache()
 
 #!/bin/bash
 
-case `/usr/bin/sw_vers -productVersion | /usr/bin/awk -F . '{print $2}'` in
+case $(/usr/bin/sw_vers -productVersion | /usr/bin/awk -F . '{print $2}'$) in
     4) lookupd -flushcache ;;   
    [56]) dscacheutil -flushcache ;;      
    [78]) sudo killall -HUP mDNSResponder ;;
@@ -432,13 +432,13 @@ on SystemProfilerReport()
 	
 	if (store = "001") then
 		set destination to "/Volumes/MHQ/Backed Up/System Profiler Reports/"
-		set dest_volume to "afp://mhq-swupdate.local/MHQ"
+		set dest_volume to "afp://fileserver.local/Service"
 	else if (store = "002") then
 		set destination to "/Volumes/Service/System Profiler Reports/"
-		set dest_volume to "afp://xserve.local/Service"
+		set dest_volume to "afp://fileserver.local/Service"
 	else if (store = "003") then
 		set destination to "/Volumes/Service/System Profiler Reports/"
-		set dest_volume to "afp://servercdr.local/Service"
+		set dest_volume to "afp://fileserver.local/Service"
 	end if
 	
 	--	display dialog oldFolder
@@ -456,13 +456,13 @@ on SystemProfilerReport()
 	do shell script "#!/bin/sh
 
 # the location includes a folder based on the date in yyyy-mm-dd format
-report_location=\"" & destination & "`date \"+%Y-%m-%d\"`/\"
+report_location=\"" & destination & "$(date \"+%Y-%m-%d\")/\"
 
 if [ ! -d \"${report_location}\" ]; then
 	mkdir \"${report_location}\"
 fi
 
-serial=`system_profiler SPHardwareDataType | grep \"Serial Number\" | awk  '{print $4}'`
+serial=$(system_profiler SPHardwareDataType | grep \"Serial Number\" | awk  '{print $4}')
 
 SPDataTypes=\"SPHardwareDataType SPMemoryDataType SPPowerDataType SPSerialATADataType SPSoftwareDataType SPThunderboltDataType SPUSBDataType SPAirPortDataType SPFireWireDataType SPParallelATADataType SPAudioDataType SPBluetoothDataType SPNetworkDataType\"
 
@@ -477,13 +477,13 @@ on UpdateWorkflowsFromServer()
 	
 	if (store = "001") then
 		set source to "/Volumes/MHQ/Backed Up/Retail Stuff/Current Workflows/"
-		set dest_volume to "afp://mhq-swupdate.local/MHQ"
+		set dest_volume to "afp://fileserver.local/Retail"
 	else if (store = "002") then
 		set source to "/Volumes/Retail/Current Workflows/"
-		set dest_volume to "afp://xserve.local/Retail"
+		set dest_volume to "afp://fileserver.local/Retail"
 	else if (store = "003") then
 		set source to "/Volumes/Retail/Current Workflows/"
-		set dest_volume to "afp://servercdr.local/Retail"
+		set dest_volume to "afp://fileserver.local/Retail"
 	end if
 	
 	--	display dialog oldFolder buttons {"OK"}

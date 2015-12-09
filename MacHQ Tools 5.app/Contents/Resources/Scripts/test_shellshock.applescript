@@ -1,7 +1,7 @@
 set test_1 to "
 #!/bin/bash
 
-EXPLOIT_1=`env x='() { :;}; echo vulnerable' bash -c \"echo this is a test\"`
+EXPLOIT_1=$(env x='() { :;}; echo vulnerable' bash -c \"echo this is a test\")
 if [ \"${EXPLOIT_1}\" = \"vulnerable\" ]; then
     echo \"Test 1 (CVE-2014-6271):	**** Machine appears to be vulnerable ****\"
 else
@@ -11,7 +11,7 @@ fi
 set test_2 to "
 #!/bin/bash
 
-EXPLOIT_2=`env X='() { (shellshocker.net)=>\\' bash -c \"echo date\"; cat echo; rm ./echo `
+EXPLOIT_2=$(env X='() { (shellshocker.net)=>\\' bash -c \"echo date\"; cat echo; rm ./echo )
 if [ \"${EXPLOIT_2}\" != \"date\" ]; then
     echo \"Test 2 (CVE-2014-7169):	**** Machine appears to be vulnerable ****\"
 else
@@ -21,7 +21,7 @@ fi
 set test_3 to "
 #!/bin/bash
 
-EXPLOIT_3=`env X=' () { }; echo hello' bash -c 'date'`
+EXPLOIT_3=$(env X=' () { }; echo hello' bash -c 'date')
 if [ \"${EXPLOIT_3}\" = \"hello\" ]; then
     echo \"Test 3 (CVE-??):	**** Machine appears to be vulnerable ****\"
 else
@@ -33,7 +33,7 @@ fi
 set test_4 to "
 #!/bin/bash
 
-EXPLOIT_4=`bash -c 'true <<EOF <<EOF <<EOF <<EOF <<EOF <<EOF <<EOF <<EOF <<EOF <<EOF <<EOF <<EOF <<EOF <<EOF' || echo \"CVE-2014-7186 vulnerable, redir_stack\"`
+EXPLOIT_4=$(bash -c 'true <<EOF <<EOF <<EOF <<EOF <<EOF <<EOF <<EOF <<EOF <<EOF <<EOF <<EOF <<EOF <<EOF <<EOF' || echo \"CVE-2014-7186 vulnerable, redir_stack\")
 if [ \"${EXPLOIT_4}\" = \"CVE-2014-7186 vulnerable, redir_stack\" ]; then
     echo \"Test 4 (CVE-2014-7186):	**** Machine appears to be vulnerable ****\"
 else
@@ -45,7 +45,7 @@ fi
 set test_5 to "
 #!/bin/bash
 
-EXPLOIT_5=`(for x in {1..200} ; do echo \"for x$x in ; do :\"; done; for x in {1..200} ; do echo done ; done) | bash || echo \"CVE-2014-7187 vulnerable, word_lineno\"`
+EXPLOIT_5=$((for x in {1..200} ; do echo \"for x$x in ; do :\"; done; for x in {1..200} ; do echo done ; done) | bash || echo \"CVE-2014-7187 vulnerable, word_lineno\")
 if [ \"${EXPLOIT_5}\" = \"CVE-2014-7187 vulnerable, word_lineno\" ]; then
     echo \"Test 5 (CVE-2014-7187):	**** Machine appears to be vulnerable ****\"
 else
@@ -56,7 +56,7 @@ fi
 set test_6 to "
 #!/bin/bash
 
-EXPLOIT_6=`shellshocker='() { echo You are vulnerable; }' bash -c shellshocker`
+EXPLOIT_6=$(shellshocker='() { echo You are vulnerable; }' bash -c shellshocker)
 if [ \"${EXPLOIT_6}\" = \"You are vulnerable\" ]; then
     echo \"Test 6 (CVE-2014-6278):	**** Machine appears to be vulnerable ****\"
 else
@@ -67,7 +67,7 @@ fi
 set test_7 to "
 #!/bin/bash
 
-EXPLOIT_7=`bash -c \"f() { x() { _;}; x() { _;} <<a; }\" 2>/dev/null || echo vulnerable`
+EXPLOIT_7=$(bash -c \"f() { x() { _;}; x() { _;} <<a; }\" 2>/dev/null || echo vulnerable)
 if [ \"${EXPLOIT_7}\" = \"vulnerable\" ]; then
     echo \"Test 7 (CVE-2014-6277):	**** Machine appears to be vulnerable ****\"
 else
