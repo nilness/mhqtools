@@ -187,7 +187,7 @@ end disableSleep
 on renameHDbySize()
 	
 	set my_script to (POSIX path of scripts_directory) & "rename_hd_by_size.sh"
-	do shell script quoted form of my_script
+	do shell script "sh " & quoted form of my_script
 	
 end renameHDbySize
 
