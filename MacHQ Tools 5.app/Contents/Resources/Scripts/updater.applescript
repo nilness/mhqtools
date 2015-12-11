@@ -18,6 +18,7 @@ try
 	
 	--check for updated resources
 	check_and_update("mhqreset.version", "mhqreset.sh", scripts_directory)
+	check_and_update("rename_hd_by_size.version", "rename_hd_by_size.sh", scripts_directory)
 	
 on error errStr number errorNumber
 	log_event("Error #" & errorNumber & " - " & errStr & " while checking for updates")
