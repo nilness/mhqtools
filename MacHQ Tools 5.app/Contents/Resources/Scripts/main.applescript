@@ -207,6 +207,7 @@ URL1='http://" & SWUpdateServer & "'
 	9) URL=\"${URL1}/index-10.9-mountainlion-lion-snowleopard-leopard.merged-1.sucatalog\" ;;
 	10) URL=\"${URL1}/index-10.10-10.9-mountainlion-lion-snowleopard-leopard.merged-1.sucatalog\" ;;
 	11) URL=\"${URL1}/index-10.11-10.10-10.9-mountainlion-lion-snowleopard-leopard.merged-1.sucatalog\" ;;
+	12) URL=\"${URL1}/index-10.12-10.11-10.10-10.9-mountainlion-lion-snowleopard-leopard.merged-1.sucatalog\" ;;
       *) echo \"Unsupported client OS\"; exit 1 ;;
     esac
 
@@ -234,26 +235,6 @@ on installResetScript()
 	end try
 end installResetScript
 
-on resetUserCPU()
-	try
-		display dialog "This will install the MHQ reset script and restart the computer into single user mode, then run the reset script automatically. Do you wish to continue?" buttons {"Quit", "Continue"} default button "Continue" cancel button "Quit"
-		installResetScript()
-		
-		if osVersion as number = 10 then
-			set target_file to ".bashrc"
-		else
-			set target_file to ".profile"
-		end if
-		
-		do shell script "echo \"sh /mhqreset.sh\" >> /private/var/root/" & target_file with administrator privileges
-		
-		do shell script "nvram boot-args=\"-s\"" with administrator privileges
-		
-		tell application "Finder" to restart
-		return -128
-	end try
-end resetUserCPU
-
 on resetThisUserCPU()
 	try
 		tell application "System Events"
@@ -262,8 +243,9 @@ on resetThisUserCPU()
 		
 		display dialog "This will install the MHQ reset script and restart the computer into single user mode, then run the reset script automatically. The user \"" & current_user & "\" will be deleted with all it's files. Do you wish to continue?" buttons {"Quit", "Continue"} default button "Continue" cancel button "Quit"
 		display dialog "Are you absolutely certain?. The user \"" & current_user & "\" will be deleted with all it's files. Do you wish to continue?" buttons {"Quit", "Continue"} default button "Continue" cancel button "Quit"
-		--installResetScript()
 		
+		-- we are going to modify the root bash environment to run our reset script when starting in single user mode
+		-- first we need to determine which bash file to add the command to
 		if osVersion as number = 10 then
 			set target_file to ".bashrc"
 		else
@@ -273,9 +255,16 @@ on resetThisUserCPU()
 		set TheFile to POSIX path of (scripts_directory & "mhqreset.sh")
 		set TheFile to quoted form of TheFile
 		
+		-- Copy the location of the reset script to the bach startup file			
 		do shell script "echo \"sh " & TheFile & "\" " & current_user & " >> /private/var/root/" & target_file with administrator privileges
 		
-		do shell script "nvram boot-args=\"-s\"" with administrator privileges
+		if osVersion as number = 12 then
+			--can't reboot to single user mode; need to do it manually
+			display dialog "You will need to manually invoke single user mode when the computer restarts in order to finish resetting the computer. Press and hold command-s when the machine reboot."
+		else
+			-- Restart in single user mode; appears no longer functional in 10.12
+			do shell script "nvram boot-args=\"-s\"" with administrator privileges
+		end if
 		
 		tell application "Finder" to restart
 		return -128
