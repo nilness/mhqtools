@@ -8,21 +8,15 @@ else
 fi
 
 
-# try to verify single-user mode!
+# Delay the login window by unloading the com.apple.loginwindow
+# LaunchDaemon in /System/Library/LaunchDaemons/
 
-if [ `! sysctl -n kern.singleuser` != "1" ]; then
-    echo Script must be run in single user mode
-    exit
-fi
+# from https://github.com/rtrouton/First-Boot-Package-Install/blob/master/scripts/firstbootpackageinstall.sh
 
-# check and mount the hard drive
-echo "********************************* Mounting file system"
-/sbin/fsck -fy
-/sbin/mount -uw /
-
+/bin/launchctl unload /System/Library/LaunchDaemons/com.apple.loginwindow.plist
 
 # we remove the user account differently based on which version of the OS we're running on
-echo "********************************* Removing user account"
+#echo "********************************* Removing user account"
 case $(/usr/bin/sw_vers -productVersion | /usr/bin/awk -F . '{print $2}') in
 
    [34]) rm -rf /var/db/netinfo/local.nidb ### remove the netinfo db file in 10.3 & 10.4
@@ -49,7 +43,7 @@ esac
 # further commands will run in all recognized systems
 
 if [ "${USER_NAME}" == "tech" ]; then
-echo "********************************* Removing tech user additional items"
+#echo "********************************* Removing tech user additional items"
 # delete various files installed by tech apps
 rm -rf /Library/Application\ Support/CrashReporter
 rm -rf /Library/Application\ Support/DriveGenius
@@ -65,48 +59,42 @@ rm -rf /Applications/Toast\ 11\ Titanium
 fi
 
 # delete user folder
-echo "********************************* Deleting user folder"
+#echo "********************************* Deleting user folder"
 rm -rf /Users/"${USER_NAME}"
 
 # remove setup done file so setup runs on boot
-echo "********************************* Re-enabling Setup Assistant"
+#echo "********************************* Re-enabling Setup Assistant"
 rm /var/db/.AppleSetupDone
 
 # remove network configuration files
-echo "********************************* Removing network configuration"
+#echo "********************************* Removing network configuration"
 rm -rf /Library/Preferences/SystemConfiguration/*
 
 # remove mhq startup item if present
-echo "********************************* Removing MacHQ Startup Item"
+#echo "********************************* Removing MacHQ Startup Item"
 rm -rf /Library/StartupItems/Set\ SWUpdate\ Server/
 
 # remove machq swupdate server setting
-echo "********************************* Removing Software Update Server settings"
+#echo "********************************* Removing Software Update Server settings"
 defaults delete /Library/Preferences/com.apple.SoftwareUpdate CatalogURL
 
 # remove machq power settings & schedules
-echo "********************************* Removing power settings & schedules"
+#echo "********************************* Removing power settings & schedules"
 rm /Library/Preferences/SystemConfiguration/com.apple.PowerManagement.plist
 rm /Library/Preferences/SystemConfiguration/com.apple.AutoWake.plist
 
 # remove machq launch agents and daemons
-echo "********************************* Removing launch agents and daemons"
+#echo "********************************* Removing launch agents and daemons"
 rm /Library/LaunchDaemons/com.machq.*
 rm /Library/LaunchAgents/com.machq.*
 
 # remove machq /usr/local folder
-echo "********************************* Removing /usr/local/mhq/"
+#echo "********************************* Removing /usr/local/mhq/"
 rm -rf /usr/local/mhq/
 
 # remove this script & root user .profile
-echo "********************************* Removing this script"
+#echo "********************************* Removing this script"
 rm "$0"
-rm /private/var/root/.profile
-rm /private/var/root/.bashrc
-
-# clear any nvram arguments
-echo "********************************* Clearing nvram arguments"
-nvram boot-args=""
 
 # shutdown the computer
 shutdown -h now
