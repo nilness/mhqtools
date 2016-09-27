@@ -76,6 +76,11 @@ rm /var/db/.AppleSetupDone
 echo "********************************* Removing network configuration"
 rm -rf /Library/Preferences/SystemConfiguration/*
 
+# remove machq power settings & schedules
+#echo "********************************* Removing power settings & schedules"
+#rm /Library/Preferences/SystemConfiguration/com.apple.PowerManagement.plist
+#rm /Library/Preferences/SystemConfiguration/com.apple.AutoWake.plist
+
 # remove mhq startup item if present
 echo "********************************* Removing MacHQ Startup Item"
 rm -rf /Library/StartupItems/Set\ SWUpdate\ Server/
@@ -83,11 +88,6 @@ rm -rf /Library/StartupItems/Set\ SWUpdate\ Server/
 # remove machq swupdate server setting
 echo "********************************* Removing Software Update Server settings"
 defaults delete /Library/Preferences/com.apple.SoftwareUpdate CatalogURL
-
-# remove machq power settings & schedules
-echo "********************************* Removing power settings & schedules"
-rm /Library/Preferences/SystemConfiguration/com.apple.PowerManagement.plist
-rm /Library/Preferences/SystemConfiguration/com.apple.AutoWake.plist
 
 # remove machq launch agents and daemons
 echo "********************************* Removing launch agents and daemons"

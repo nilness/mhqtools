@@ -260,7 +260,7 @@ on resetThisUserCPU()
 		
 		if osVersion as number = 12 then
 			--can't reboot to single user mode; need to do it manually
-			display dialog "You will need to manually invoke single user mode when the computer restarts in order to finish resetting the computer. Press and hold command-s when the machine reboot."
+			display dialog "You will need to manually invoke single user mode when the computer restarts in order to finish resetting the computer. Press and hold command-s when the machine reboot." buttons {"OK"}
 		else
 			-- Restart in single user mode; appears no longer functional in 10.12
 			do shell script "nvram boot-args=\"-s\"" with administrator privileges
