@@ -77,6 +77,7 @@ set theButtonNames to theButtonNames & {"-------------------------------"}
 set theButtonNames to theButtonNames & {"Test for Flashback Trojan"}
 set theButtonNames to theButtonNames & {"Test for ShellShock vulnerability"}
 set theButtonNames to theButtonNames & {"-------------------------------"}
+set theButtonNames to theButtonNames & {"Reset current user home folder permissions"}
 set theButtonNames to theButtonNames & {"Rebuild Launch Services DB"}
 set theButtonNames to theButtonNames & {"Flush DNS Cache"}
 set theButtonNames to theButtonNames & {"Reset Fake preferences"}
@@ -130,6 +131,8 @@ repeat
 		UpdateWorkflowsFromServer()
 	else if theChoice as string is "Test for ShellShock vulnerability" then
 		run script file (scripts_directory & "test_shellshock.applescript")
+	else if theChoice as string is "Reset current user home folder permissions" then
+		ResetHomeFolderPermissions()
 	end if
 	
 end repeat
@@ -379,6 +382,17 @@ esac
 		do shell script theSetScript
 	end if
 end FlushDNSCache
+
+on ResetHomeFolderPermissions()
+	
+	display dialog "This will attempt to restore normal permissions to and remove ACLs from the current user's home folder. This is an experimental new feature and you should make sure you are backed up. Do you wish to continue?" buttons {"Quit", "Continue"} default button "Continue" cancel button "Quit"
+	display dialog "Are you absolutely certain?. This feature should only be used on a backed up system. Do you wish to continue?" buttons {"Quit", "Continue"} default button "Continue" cancel button "Quit"
+	
+	set uid to do shell script "echo $UID"
+	
+	do shell script "sudo chflags -R nouchg,nouappnd ~ ; sudo chown -R " & uid & ":staff ~ ; sudo chmod -R u+rwX ~ ; chmod -R -N ~" with administrator privileges
+	
+end ResetHomeFolderPermissions
 
 on SystemProfilerReport()
 	
