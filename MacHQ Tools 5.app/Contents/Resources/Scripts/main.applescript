@@ -77,6 +77,9 @@ set theButtonNames to theButtonNames & {"-------------------------------"}
 set theButtonNames to theButtonNames & {"Test for Flashback Trojan"}
 set theButtonNames to theButtonNames & {"Test for ShellShock vulnerability"}
 set theButtonNames to theButtonNames & {"-------------------------------"}
+set theButtonNames to theButtonNames & {"Disable AutoBoot"}
+set theButtonNames to theButtonNames & {"Enable AutoBoot"}
+set theButtonNames to theButtonNames & {"-------------------------------"}
 set theButtonNames to theButtonNames & {"Reset current user home folder permissions"}
 set theButtonNames to theButtonNames & {"Rebuild Launch Services DB"}
 set theButtonNames to theButtonNames & {"Flush DNS Cache"}
@@ -133,6 +136,10 @@ repeat
 		run script file (scripts_directory & "test_shellshock.applescript")
 	else if theChoice as string is "Reset current user home folder permissions" then
 		ResetHomeFolderPermissions()
+	else if theChoice as string is "Disable AutoBoot" then
+		DisableAutoBoot()
+	else if theChoice as string is "Enable AutoBoot" then
+		EnableAutoBoot()
 	end if
 	
 end repeat
@@ -517,6 +524,17 @@ on check_and_update(version_file, content_file, content_directory)
 	
 end check_and_update
 
+on EnableAutoBoot()
+	
+	do shell script "sudo nvram AutoBoot=%00" with administrator privileges
+	
+end ResetHomeFolderPermissions
+
+on DisableAutoBoot()
+	
+	do shell script "sudo nvram AutoBoot=%03" with administrator privileges
+	
+end ResetHomeFolderPermissions
 
 on log_event(themessage)
 	set theLine to (do shell script "date  +'%Y-%m-%d %H:%M:%S'" as string) & " " & themessage
