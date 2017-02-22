@@ -526,13 +526,13 @@ end check_and_update
 
 on EnableAutoBoot()
 	
-	do shell script "sudo nvram AutoBoot=%00" with administrator privileges
+	do shell script "sudo nvram AutoBoot=%03" with administrator privileges
 	
 end ResetHomeFolderPermissions
 
 on DisableAutoBoot()
 	
-	do shell script "sudo nvram AutoBoot=%03" with administrator privileges
+	do shell script "sudo nvram AutoBoot=%00" with administrator privileges
 	
 end ResetHomeFolderPermissions
 
