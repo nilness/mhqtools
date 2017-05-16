@@ -87,6 +87,7 @@ set theButtonNames to theButtonNames & {"Reset Fake preferences"}
 --set theButtonNames to theButtonNames & {"Update Fake Workflows from Server"}
 set theButtonNames to theButtonNames & {"Install SWUpdate StartupItem"}
 --set theButtonNames to theButtonNames & {"Save System Profiler Report to server"}
+set theButtonNames to theButtonNames & {"Read system version on drive"}
 
 repeat
 	set theChoice to choose from list theButtonNames with title "MacHQ Tools" with prompt "Please choose an action:" cancel button name "Quit"
@@ -140,6 +141,8 @@ repeat
 		DisableAutoBoot()
 	else if theChoice as string is "Enable AutoBoot" then
 		EnableAutoBoot()
+	else if theChoice as string is "Read system version on drive" then
+		ReadSystemVersion()
 	end if
 	
 end repeat
@@ -528,13 +531,32 @@ on EnableAutoBoot()
 	
 	do shell script "sudo nvram AutoBoot=%03" with administrator privileges
 	
-end ResetHomeFolderPermissions
+end EnableAutoBoot
+
+on ReadSystemVersion()
+	
+	-- get a list of items in the Volumes folder (basically a list of mounted disks)
+	do shell script "ls /Volumes/"
+	-- set _Result to the list items
+	set _Result to the paragraphs of result
+	-- set theVolumeTemp to choose a volume from the list, result would be something like "Macintosh HD"
+	set theVolumeTemp to (choose from list _Result with prompt "Choose Volume:" without empty selection allowed)
+	-- if user presses Cancel, close the dialog
+	if theVolumeTemp is false then return
+	-- set theVolume to the actual path, e.g. /Volumes/Macintosh HD/
+	set theVolume to "/Volumes/" & theVolumeTemp
+	
+	set _systemVersion to do shell script "defaults read " & theVolume & "/System/Library/CoreServices/SystemVersion.plist ProductVersion"
+	
+	display dialog _systemVersion
+	
+end ReadSystemVersion
 
 on DisableAutoBoot()
 	
 	do shell script "sudo nvram AutoBoot=%00" with administrator privileges
 	
-end ResetHomeFolderPermissions
+end DisableAutoBoot
 
 on log_event(themessage)
 	set theLine to (do shell script "date  +'%Y-%m-%d %H:%M:%S'" as string) & " " & themessage
