@@ -546,7 +546,7 @@ on ReadSystemVersion()
 	-- set theVolume to the actual path, e.g. /Volumes/Macintosh HD/
 	set theVolume to "/Volumes/" & theVolumeTemp
 	
-	set _systemVersion to do shell script "defaults read " & theVolume & "/System/Library/CoreServices/SystemVersion.plist ProductVersion"
+	set _systemVersion to do shell script "defaults read \"" & theVolume & "/System/Library/CoreServices/SystemVersion.plist\" ProductVersion"
 	
 	display dialog _systemVersion
 	
