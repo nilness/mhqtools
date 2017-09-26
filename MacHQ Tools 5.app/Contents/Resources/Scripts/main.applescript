@@ -74,9 +74,9 @@ set theButtonNames to theButtonNames & {"-------------------------------"}
 set theButtonNames to theButtonNames & {"Install MHQ Reset Script"}
 set theButtonNames to theButtonNames & {"Remove Current User & Reset CPU"}
 set theButtonNames to theButtonNames & {"-------------------------------"}
-set theButtonNames to theButtonNames & {"Test for Flashback Trojan"}
-set theButtonNames to theButtonNames & {"Test for ShellShock vulnerability"}
-set theButtonNames to theButtonNames & {"-------------------------------"}
+--set theButtonNames to theButtonNames & {"Test for Flashback Trojan"}
+--set theButtonNames to theButtonNames & {"Test for ShellShock vulnerability"}
+--set theButtonNames to theButtonNames & {"-------------------------------"}
 set theButtonNames to theButtonNames & {"Disable AutoBoot"}
 set theButtonNames to theButtonNames & {"Enable AutoBoot"}
 set theButtonNames to theButtonNames & {"-------------------------------"}
@@ -221,6 +221,7 @@ URL1='http://" & SWUpdateServer & "'
 	10) URL=\"${URL1}/index-10.10-10.9-mountainlion-lion-snowleopard-leopard.merged-1.sucatalog\" ;;
 	11) URL=\"${URL1}/index-10.11-10.10-10.9-mountainlion-lion-snowleopard-leopard.merged-1.sucatalog\" ;;
 	12) URL=\"${URL1}/index-10.12-10.11-10.10-10.9-mountainlion-lion-snowleopard-leopard.merged-1.sucatalog\" ;;
+	13) URL=\"${URL1}/index-10.13-10.12-10.11-10.10-10.9-mountainlion-lion-snowleopard-leopard.merged-1.sucatalog\" ;;
       *) echo \"Unsupported client OS\"; exit 1 ;;
     esac
 
@@ -271,7 +272,7 @@ on resetThisUserCPU()
 		-- Copy the location of the reset script to the bach startup file			
 		do shell script "echo \"sh " & TheFile & "\" " & current_user & " >> /private/var/root/" & target_file with administrator privileges
 		
-		if osVersion as number = 12 then
+		if osVersion as number > 11 then
 			--can't reboot to single user mode; need to do it manually
 			display dialog "You will need to manually invoke single user mode when the computer restarts in order to finish resetting the computer. Press and hold command-s when the machine reboot." buttons {"OK"}
 		else
@@ -376,11 +377,11 @@ on FlushDNSCache()
 
 #!/bin/bash
 
-case $(/usr/bin/sw_vers -productVersion | /usr/bin/awk -F . '{print $2}'$) in
+case $(/usr/bin/sw_vers -productVersion | /usr/bin/awk -F . '{print $2}') in
     4) lookupd -flushcache ;;   
    [56]) dscacheutil -flushcache ;;      
    [78]) sudo killall -HUP mDNSResponder ;;
-    9 | 10 | 11) dscacheutil -flushcache; sudo killall -HUP mDNSResponder ;;
+    9 | 10 | 11 | 12 | 13) dscacheutil -flushcache; sudo killall -HUP mDNSResponder ;;
       *) echo \"Unsupported client OS\"; exit 1 ;;
 esac
 "
