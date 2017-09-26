@@ -74,9 +74,9 @@ set theButtonNames to theButtonNames & {"-------------------------------"}
 set theButtonNames to theButtonNames & {"Install MHQ Reset Script"}
 set theButtonNames to theButtonNames & {"Remove Current User & Reset CPU"}
 set theButtonNames to theButtonNames & {"-------------------------------"}
-set theButtonNames to theButtonNames & {"Test for Flashback Trojan"}
-set theButtonNames to theButtonNames & {"Test for ShellShock vulnerability"}
-set theButtonNames to theButtonNames & {"-------------------------------"}
+--set theButtonNames to theButtonNames & {"Test for Flashback Trojan"}
+--set theButtonNames to theButtonNames & {"Test for ShellShock vulnerability"}
+--set theButtonNames to theButtonNames & {"-------------------------------"}
 set theButtonNames to theButtonNames & {"Disable AutoBoot"}
 set theButtonNames to theButtonNames & {"Enable AutoBoot"}
 set theButtonNames to theButtonNames & {"-------------------------------"}
