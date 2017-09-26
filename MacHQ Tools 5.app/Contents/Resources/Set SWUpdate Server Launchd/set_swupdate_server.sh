@@ -39,7 +39,9 @@ case $(/usr/bin/sw_vers -productVersion | /usr/bin/awk -F . '{print $2}') in
 8) URL="http://${SWUpdateServer}/index-mountainlion-lion-snowleopard-leopard.merged-1.sucatalog" ;;
 9) URL="http://${SWUpdateServer}/index-10.9-mountainlion-lion-snowleopard-leopard.merged-1.sucatalog" ;;
 10) URL="http://${SWUpdateServer}/index-10.10-10.9-mountainlion-lion-snowleopard-leopard.merged-1.sucatalog" ;;
-*) /usr/bin/syslog -s -l 3 "Unrecognized client OS"; exit 1 ;;
+11) URL="http://${SWUpdateServer}/index-10.11-10.10-10.9-mountainlion-lion-snowleopard-leopard.merged-1.sucatalog" ;;
+12) URL="http://${SWUpdateServer}/index-10.12-10.11-10.10-10.9-mountainlion-lion-snowleopard-leopard.merged-1.sucatalog" ;;
+13) URL="http://${SWUpdateServer}/index-10.13-10.12-10.11-10.10-10.9-mountainlion-lion-snowleopard-leopard.merged-1.sucatalog" *) /usr/bin/syslog -s -l 3 "Unrecognized client OS"; exit 1 ;;
 esac
 
 /usr/bin/defaults write /Library/Preferences/com.apple.SoftwareUpdate CatalogURL "${URL}"
