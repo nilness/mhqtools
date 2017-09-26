@@ -377,7 +377,7 @@ on FlushDNSCache()
 
 #!/bin/bash
 
-case $(/usr/bin/sw_vers -productVersion | /usr/bin/awk -F . '{print $2}'$) in
+case $(/usr/bin/sw_vers -productVersion | /usr/bin/awk -F . '{print $2}') in
     4) lookupd -flushcache ;;   
    [56]) dscacheutil -flushcache ;;      
    [78]) sudo killall -HUP mDNSResponder ;;
