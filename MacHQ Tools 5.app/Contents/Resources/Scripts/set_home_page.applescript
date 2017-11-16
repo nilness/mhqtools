@@ -8,4 +8,4 @@ on error
 	do shell script "touch " & fileTarget
 end try
 
-do shell script "defaults write com.apple.Safari HomePage http://fileserver.local:8013/fmi/webd/ProductViewer; defaults write com.apple.Safari NewWindowBehavior 0"
+do shell script "defaults write com.apple.Safari HomePage http://001.machq.com:8013/fmi/webd/ProductViewer; defaults write com.apple.Safari NewWindowBehavior 0"
