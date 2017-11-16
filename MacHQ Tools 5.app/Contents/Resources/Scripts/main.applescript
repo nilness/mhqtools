@@ -17,11 +17,19 @@ try
 	
 	check_and_update("updater.version", "updater.applescript", scripts_directory)
 	
+on error
+	log_event("Unable to find scripts and/or resources directory.")
+	display dialog "Unable to find scripts and/or resources directory. Quitting."
+	return
 end try
 
 -- get the OS versin
-set osVersion to do shell script "/usr/bin/sw_vers -productVersion | /usr/bin/awk -F . '{print $2}'"
-log_event("OS version: " & osVersion)
+try
+	set osVersion to do shell script "/usr/bin/sw_vers -productVersion | /usr/bin/awk -F . '{print $2}'"
+	log_event("OS version: " & osVersion)
+on error
+	set osVersion to "undefined"
+end try
 
 -- try to determine which store we're in
 try
@@ -36,6 +44,9 @@ try
 	else if externalIP is equal to (do shell script "/usr/bin/dig +short 003.machq.com") then
 		set store to "003"
 		set SWUpdateServer to "netboot-station.local:8088"
+	else
+		set store to "undefined"
+		set SWUpdateServer to "undefined"
 	end if
 	
 on error
@@ -85,7 +96,7 @@ set theButtonNames to theButtonNames & {"Rebuild Launch Services DB"}
 set theButtonNames to theButtonNames & {"Flush DNS Cache"}
 set theButtonNames to theButtonNames & {"Reset Fake preferences"}
 --set theButtonNames to theButtonNames & {"Update Fake Workflows from Server"}
-set theButtonNames to theButtonNames & {"Install SWUpdate StartupItem"}
+--set theButtonNames to theButtonNames & {"Install SWUpdate StartupItem"}
 --set theButtonNames to theButtonNames & {"Save System Profiler Report to server"}
 set theButtonNames to theButtonNames & {"Read system version on drive"}
 
@@ -230,10 +241,14 @@ URL1='http://" & SWUpdateServer & "'
 	"
 	--if running in 10.7 or later we need to supply password
 	try
-		if (osVersion as number > 6) then
-			do shell script theSetScript with administrator privileges
+		if SWUpdateServer is not "undefined" then
+			if (osVersion as number > 6) then
+				do shell script theSetScript with administrator privileges
+			else
+				do shell script theSetScript
+			end if
 		else
-			do shell script theSetScript
+			log_event("Unable to set SWUpdate Server becasue SWUpdateServer variable is set to: " & SWUpdateServer)
 		end if
 	end try
 end setSWUpdateServer
