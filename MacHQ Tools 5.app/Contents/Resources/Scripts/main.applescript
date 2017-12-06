@@ -15,12 +15,15 @@ try
 	log_event("Scripts directory is: " & scripts_directory)
 	log_event("Resources directory is: " & resources_directory)
 	
-	check_and_update("updater.version", "updater.applescript", scripts_directory)
-	
 on error
 	log_event("Unable to find scripts and/or resources directory.")
 	display dialog "Unable to find scripts and/or resources directory. Quitting."
 	return
+end try
+
+try
+	check_and_update("updater.version", "updater.applescript", scripts_directory)
+	
 end try
 
 -- get the OS versin
@@ -93,6 +96,7 @@ set theButtonNames to theButtonNames & {"Enable AutoBoot"}
 set theButtonNames to theButtonNames & {"-------------------------------"}
 set theButtonNames to theButtonNames & {"Reset current user home folder permissions"}
 set theButtonNames to theButtonNames & {"Rebuild Launch Services DB"}
+set theButtonNames to theButtonNames & {"Reset Icon Store"}
 set theButtonNames to theButtonNames & {"Flush DNS Cache"}
 set theButtonNames to theButtonNames & {"Reset Fake preferences"}
 --set theButtonNames to theButtonNames & {"Update Fake Workflows from Server"}
@@ -140,6 +144,8 @@ repeat
 		InstallSWUpdatePlist()
 	else if theChoice as string is "Flush DNS Cache" then
 		FlushDNSCache()
+	else if theChoice as string is "Reset Icon Store" then
+		ResetIconStore()
 	else if theChoice as string is "Save System Profiler Report to server" then
 		SystemProfilerReport()
 	else if theChoice as string is "Update Fake Workflows from Server" then
@@ -409,6 +415,20 @@ esac
 	end if
 end FlushDNSCache
 
+on ResetIconStore()
+	set theSetScript to "
+
+#!/bin/bash
+
+find /private/var/folders/ -name com.apple.iconservices -exec rm -rf {} \\;
+rm -rf /Library/Caches/com.apple.iconservices.store
+killall Dock
+"
+	do shell script theSetScript with administrator privileges
+	
+	
+end ResetIconStore
+
 on ResetHomeFolderPermissions()
 	
 	display dialog "This will attempt to restore normal permissions to and remove ACLs from the current user's home folder. This is an experimental new feature and you should make sure you are backed up. Do you wish to continue?" buttons {"Quit", "Continue"} default button "Continue" cancel button "Quit"
@@ -524,23 +544,32 @@ on check_and_update(version_file, content_file, content_directory)
 		do shell script "echo 0 > " & quoted form of local_version_file -- create file with version 0 to force update
 	end try
 	
-	-- get and compare the local and most current versions
-	set local_version to do shell script "/bin/cat " & quoted form of local_version_file
-	set current_version to do shell script "/usr/bin/curl https://raw.githubusercontent.com/nilness/mhqtools/master/MacHQ%20Tools%205.app/Contents/Resources/" & version_file
-	
-	if (current_version is equal to "Not Found") then
-		log_event("File https://raw.githubusercontent.com/nilness/mhqtools/master/MacHQ%20Tools%205.app/Contents/Resources/" & version_file & " wasn't found on GitHub.")
+	try
+		-- get and compare the local and most current versions
+		set local_version to do shell script "/bin/cat " & quoted form of local_version_file
+		set current_version to do shell script "/usr/bin/curl https://raw.githubusercontent.com/nilness/mhqtools/master/MacHQ%20Tools%205.app/Contents/Resources/" & version_file
+		
+		if (current_version is equal to "Not Found") then
+			log_event("File https://raw.githubusercontent.com/nilness/mhqtools/master/MacHQ%20Tools%205.app/Contents/Resources/" & version_file & " wasn't found on GitHub.")
+			return
+		end if
+	on error
+		log_event("Unable to compare local and online versions. May not be connected to internet.")
 		return
-	end if
+	end try
 	
-	log_event("Checking " & content_file & " versions - local: " & local_version & ", current: " & current_version)
-	if (current_version > local_version) then
-		--download the new version
-		do shell script "/usr/bin/curl https://raw.githubusercontent.com/nilness/mhqtools/master/MacHQ%20Tools%205.app/Contents/Resources/Scripts/" & content_file & " > " & quoted form of local_file
-		--update the local version string
-		do shell script "/bin/echo " & current_version & " > " & quoted form of local_version_file
-	end if
-	
+	try
+		log_event("Checking " & content_file & " versions - local: " & local_version & ", current: " & current_version)
+		if (current_version > local_version) then
+			--download the new version
+			do shell script "/usr/bin/curl https://raw.githubusercontent.com/nilness/mhqtools/master/MacHQ%20Tools%205.app/Contents/Resources/Scripts/" & content_file & " > " & quoted form of local_file
+			--update the local version string
+			do shell script "/bin/echo " & current_version & " > " & quoted form of local_version_file
+		end if
+	on error
+		log_event("Unable to download updated version. May not be connected to internet.")
+		return
+	end try
 end check_and_update
 
 on EnableAutoBoot()
