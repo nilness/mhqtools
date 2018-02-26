@@ -116,7 +116,7 @@ rm -rf "/usr/local/outset"
 /usr/bin/profiles -R -p com.machq.profile.safari
 
 #reset power settings
-pmset -c 2 -b 1 -u 1
+pmset restoredefaults
 pmset repeat cancel
 
 # remove machq /usr/local folder
