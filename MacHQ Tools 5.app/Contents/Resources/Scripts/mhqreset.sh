@@ -94,6 +94,27 @@ echo "********************************* Removing launch agents and daemons"
 rm /Library/LaunchDaemons/com.machq.*
 rm /Library/LaunchAgents/com.machq.*
 
+# remove Outset
+launchctl unload "/Library/LaunchDaemons/com.github.outset.boot.plist"
+rm -fv "/Library/LaunchDaemons/com.github.outset.boot.plist"
+launchctl unload "/Library/LaunchDaemons/com.github.outset.cleanup.plist"
+rm -fv "/Library/LaunchDaemons/com.github.outset.cleanup.plist"
+launchctl unload "/Library/LaunchAgents/com.github.outset.login.plist"
+rm -fv "/Library/LaunchAgents/com.github.outset.login.plist"
+launchctl unload "/Library/LaunchAgents/com.github.outset.on-demand.plist"
+rm -fv "/Library/LaunchAgents/com.github.outset.on-demand.plist"
+rm -rfv /usr/local/outset
+pkgutil --forget com.github.outset
+
+#remove Outset files
+rm -rf "/usr/local/outset"
+
+#remove MacHQ WiFi profile
+/usr/bin/profiles -R -p machq.A84EA65A-F042-40D5-A9DE-E503F5215357
+
+#remove MacHQ Homepage profile
+/usr/bin/profiles -R -p com.machq.profile.safari
+
 # remove machq /usr/local folder
 echo "********************************* Removing /usr/local/mhq/"
 rm -rf /usr/local/mhq/
