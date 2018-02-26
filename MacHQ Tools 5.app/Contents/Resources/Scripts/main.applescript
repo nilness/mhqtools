@@ -293,6 +293,9 @@ on resetThisUserCPU()
 		-- Copy the location of the reset script to the bach startup file			
 		do shell script "echo \"sh " & TheFile & "\" " & current_user & " >> /private/var/root/" & target_file with administrator privileges
 		
+		--Reset power settings
+		do shell script "pmset restoredefaults" with administrator privileges
+		
 		if osVersion as number > 11 then
 			--can't reboot to single user mode; need to do it manually
 			display dialog "You will need to manually invoke single user mode when the computer restarts in order to finish resetting the computer. Press and hold command-s when the machine reboot." buttons {"OK"}
