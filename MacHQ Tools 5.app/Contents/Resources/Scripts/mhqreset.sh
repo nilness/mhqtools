@@ -115,6 +115,10 @@ rm -rf "/usr/local/outset"
 #remove MacHQ Homepage profile
 /usr/bin/profiles -R -p com.machq.profile.safari
 
+#reset power settings
+pmset -c 2 -b 1 -u 1
+pmset repeat cancel
+
 # remove machq /usr/local folder
 echo "********************************* Removing /usr/local/mhq/"
 rm -rf /usr/local/mhq/
