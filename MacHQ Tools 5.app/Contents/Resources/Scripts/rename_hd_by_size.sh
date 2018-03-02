@@ -14,7 +14,7 @@ sp_size=$(system_profiler SPSerialATADataType | sed '/^ *Capacity: */!d;s###' | 
 echo echo sp_size: ${sp_size}
 
 # Get the drive size from Core Storage
-cs_size=$(diskutil cs list | awk '/Size/{print}' | sed -n -e 1p | tr '()' '\\n' | head -2 | tail -1 | awk '{print $1}')
+cs_size=$(diskutil cs list | awk '/Size/{print}' | sed -n -e 1p | tr '()' '\n' | head -2 | tail -1 | awk '{print $1}')
 cs_round_size=$(echo "${cs_size}" | awk '{print int($1+0.5)}')
 
 echo echo cs_size: ${cs_size}
