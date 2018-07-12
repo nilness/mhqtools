@@ -99,13 +99,14 @@ defaults delete /Library/Preferences/com.apple.SoftwareUpdate CatalogURL
 # remove Outset
 /bin/echo "********************************* Removing Outcast daemons and agents"
 /bin/launchctl unload "/Library/LaunchDaemons/com.github.outset.boot.plist"
-/bin/rm -fv "/Library/LaunchDaemons/com.github.outset.boot.plist"
+# /bin/rm -fv "/Library/LaunchDaemons/com.github.outset.boot.plist"
 /bin/launchctl unload "/Library/LaunchDaemons/com.github.outset.cleanup.plist"
-/bin/rm -fv "/Library/LaunchDaemons/com.github.outset.cleanup.plist"
+/bin/rm -fv /Library/LaunchDaemons/com.github.outset.*
 /bin/launchctl unload "/Library/LaunchAgents/com.github.outset.login.plist"
-/bin/rm -fv "/Library/LaunchAgents/com.github.outset.login.plist"
+#/bin/rm -fv "/Library/LaunchAgents/com.github.outset.login.plist"
 /bin/launchctl unload "/Library/LaunchAgents/com.github.outset.on-demand.plist"
-/bin/rm -fv "/Library/LaunchAgents/com.github.outset.on-demand.plist"
+#/bin/rm -fv "/Library/LaunchAgents/com.github.outset.on-demand.plist"
+/bin/rm -fv /Library/LaunchAgents/com.github.outset.*
 /bin/rm -rfv /usr/local/outset
 /usr/sbin/pkgutil --forget com.github.outset
 
