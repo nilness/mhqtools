@@ -122,6 +122,10 @@ defaults delete /Library/Preferences/com.apple.SoftwareUpdate CatalogURL
 /bin/echo "********************************* Removing MacHQ homepage profile"
 /usr/bin/profiles -R -p com.machq.profile.safari
 
+#remove all profiles
+/bin/echo "********************************* Removing all profiles"
+/usr/bin/profiles -R -all
+
 #reset power settings
 /bin/echo "********************************* Removing MacHQ power settings"
 /usr/bin/pmset restoredefaults
