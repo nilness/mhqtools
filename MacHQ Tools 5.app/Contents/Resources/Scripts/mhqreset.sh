@@ -124,7 +124,7 @@ defaults delete /Library/Preferences/com.apple.SoftwareUpdate CatalogURL
 
 #remove all profiles
 /bin/echo "********************************* Removing all profiles"
-/usr/bin/profiles -R -all
+/usr/bin/profiles remove -forced -all
 
 #reset power settings
 /bin/echo "********************************* Removing MacHQ power settings"
