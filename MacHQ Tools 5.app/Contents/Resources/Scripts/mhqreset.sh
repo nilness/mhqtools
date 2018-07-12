@@ -115,7 +115,7 @@ defaults delete /Library/Preferences/com.apple.SoftwareUpdate CatalogURL
 
 #remove MacHQ WiFi profile
 /bin/echo "********************************* Removing MacHQ WiFi profile"
-/usr/bin/profiles -R -p machq.A84EA65A-F042-40D5-A9DE-E503F5215357
+/usr/bin/profiles -R -p com.machq.A84EA65A-F042-40D5-A9DE-E503F5215357
 
 
 #remove MacHQ Screen Saver profile
