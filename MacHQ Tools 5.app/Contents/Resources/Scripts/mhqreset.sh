@@ -118,13 +118,33 @@ defaults delete /Library/Preferences/com.apple.SoftwareUpdate CatalogURL
 /usr/bin/profiles -R -p machq.A84EA65A-F042-40D5-A9DE-E503F5215357
 
 
+#remove MacHQ Screen Saver profile
+/bin/echo "********************************* Removing MacHQ screensaver profile"
+/usr/bin/profiles -R -p com.machq.screensaver
+
 #remove MacHQ Homepage profile
 /bin/echo "********************************* Removing MacHQ homepage profile"
 /usr/bin/profiles -R -p com.machq.profile.safari
 
+#remove Skip Data and Privacy profile
+/bin/echo "********************************* Removing Skip Data and Privacy profile"
+/usr/bin/profiles -R -p com.github.93de3086-a916-4c08-8139-aa6b43986067.alacarte
+
+#remove Skip iCloud Setup profile
+/bin/echo "********************************* Removing Skip iCloud Setup profile"
+/usr/bin/profiles -R -p com.github.c8d04bb6-91ca-4bc9-a5d7-c636fe132846.alacarte
+
+#remove Skip Siri Setup profile
+/bin/echo "********************************* Removing Skip Siri Setup profile"
+/usr/bin/profiles -R -p com.github.730571bc-0591-41d4-bc15-43e12b4c74cd.alacarte
+
+#remove Skip TouchID Setup profile
+/bin/echo "********************************* Removing Skip TouchID Setup profile"
+/usr/bin/profiles -R -p com.github.d53c8667-5493-4e37-abf4-ddf8ebe3e06f.alacarte
+
 #remove all profiles
-/bin/echo "********************************* Removing all profiles"
-/usr/bin/profiles remove -forced -all
+#/bin/echo "********************************* Removing all profiles"
+#/usr/bin/profiles remove -forced -all
 
 #reset power settings
 /bin/echo "********************************* Removing MacHQ power settings"
