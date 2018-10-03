@@ -41,7 +41,7 @@ case $(/usr/bin/sw_vers -productVersion | /usr/bin/awk -F . '{print $2}') in
 
        /usr/bin/dscl . -delete /users/"${USER_NAME}"
        ;;
-  [789] | 10 | 11 | 12 | 13 | 14) /bin/rm /var/db/dslocal/nodes/Default/users/"${USER_NAME}".plist
+  [789] | 10 | 11 | 12 | 13 | 14) /bin/rm -f/var/db/dslocal/nodes/Default/users/"${USER_NAME}".plist
        ;; 
     *) /bin/echo "Unrecognized System Version - user account was NOT removed"
        exit
@@ -155,6 +155,7 @@ defaults delete /Library/Preferences/com.apple.SoftwareUpdate CatalogURL
 # remove machq /usr/local folder
 /bin/echo "********************************* Removing /usr/local/mhq/"
 /bin/rm -rf /usr/local/mhq/
+/bin/rm -f /usr/local/bin/mhq_set_swupdate.sh
 
 # remove this script & root user .profile
 /bin/echo "********************************* Removing this script"
