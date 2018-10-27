@@ -90,6 +90,8 @@ fi
 # remove machq swupdate server setting
 /bin/echo "********************************* Removing Software Update Server settings"
 defaults delete /Library/Preferences/com.apple.SoftwareUpdate CatalogURL
+/bin/rm /Library/Preferences/SystemConfiguration/com.apple.SoftwareUpdate.plist
+
 
 # remove machq launch agents and daemons
 /bin/echo "********************************* Removing launch agents and daemons"
