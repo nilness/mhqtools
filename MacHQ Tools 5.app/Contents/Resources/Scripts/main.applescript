@@ -271,7 +271,7 @@ on installResetScript()
 end installResetScript
 
 on resetThisUserCPU()
-	if (osVersion as number > 6) then
+	if (osVersion as number = 14) then
 		display dialog "10.14 (Mojave) isn't fully compatible with the reset process. Instead it is recommended that you restore a fresh copy of the OS to the computer instead. Alternately after running this reset script you should walk the user through setting up the computer and removing the old user account and any installed profiles manually."
 	end if
 	try
