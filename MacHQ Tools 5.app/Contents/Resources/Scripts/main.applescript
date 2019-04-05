@@ -239,6 +239,7 @@ URL1='http://" & SWUpdateServer & "'
 	11) URL=\"${URL1}/index-10.11-10.10-10.9-mountainlion-lion-snowleopard-leopard.merged-1.sucatalog\" ;;
 	12) URL=\"${URL1}/index-10.12-10.11-10.10-10.9-mountainlion-lion-snowleopard-leopard.merged-1.sucatalog\" ;;
 	13) URL=\"${URL1}/index-10.13-10.12-10.11-10.10-10.9-mountainlion-lion-snowleopard-leopard.merged-1.sucatalog\" ;;
+	14) URL=\"${URL1}/index-10.14-10.13-10.12-10.11-10.10-10.9-mountainlion-lion-snowleopard-leopard.merged-1.sucatalog\" ;;
       *) echo \"Unsupported client OS\"; exit 1 ;;
     esac
 
@@ -408,7 +409,7 @@ case $(/usr/bin/sw_vers -productVersion | /usr/bin/awk -F . '{print $2}') in
     4) lookupd -flushcache ;;   
    [56]) dscacheutil -flushcache ;;      
    [78]) sudo killall -HUP mDNSResponder ;;
-    9 | 10 | 11 | 12 | 13) dscacheutil -flushcache; sudo killall -HUP mDNSResponder ;;
+    9 | 10 | 11 | 12 | 13 | 14) dscacheutil -flushcache; sudo killall -HUP mDNSResponder ;;
       *) echo \"Unsupported client OS\"; exit 1 ;;
 esac
 "
